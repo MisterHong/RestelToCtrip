@@ -1,0 +1,11 @@
+<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <soap:Body>
+		<OTA_ReadRS Version="2.3" EchoToken="201403211421" xmlns="http://www.opentravel.org/OTA/2003/05" xmlns:xsi="http://www.w3.org/2001/XMLSchemainstance">
+		    <Errors>
+ 				#(error)
+ 			</Errors>
+		    <HotelReservations>
+			</HotelReservations>
+		</OTA_ReadRS>
+    </soap:Body>
+</soap:Envelope>

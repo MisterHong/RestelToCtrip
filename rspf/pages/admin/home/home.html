@@ -1,0 +1,48 @@
+<%
+DIRECTIVE SAFE_OUTPUT_OPEN;
+var headContent = {
+include("/pages/template/head.html"){}
+%>
+
+<script type="text/javascript">
+    var oper;
+    jQuery(function($) {
+        // 页面方法
+        oper = {
+            form : document.form1,
+            list : function() {
+                var url = 'admin/home';
+                this.form.action = url;
+                this.form.submit();
+            }
+        };
+        //显示Menu索引
+        //showMenu('page_home');
+    });
+
+</script>
+
+<%
+};
+%>
+
+<%
+var bodyContent = {
+%>
+<!-- 菜单 -->
+<% include("/pages/template/menu.html"){} %>
+<br/><br/>
+<div class="panel panel-default" style="font-size: 20px;border-color: rgb(226, 78, 78);">
+    <div class="panel-body">
+        <ol class="breadcrumb">
+            <li class="active">酒店管理须知：</li>
+        </ol>
+        - 1.由于酒店数据庞大，因此展示数据与供应商数有时差，展示数据的时间差不超过2.5个小时，本页面的数据从中转数据库取得，中转数据库的数据每2.5小时通过供应商接口更新一次<br/>
+        - 2.关于数据的残缺问题，页面数据全部来自供应商，因此中转平台不保证数据的完整性，在进行数据推送到携程时，会从供应商获取最新数据，防止数据不准确<br/>
+    </div>
+</div>
+<%}; %>
+
+<% layout("/pages/template/_layout.html",{head:headContent,body:bodyContent}){ %>
+DIRECTIVE SAFE_OUTPUT_CLOSE;
+<%} %>

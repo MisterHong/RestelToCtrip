@@ -1,0 +1,216 @@
+<% 
+	var headContent = {
+	include("/pages/template/head.html"){}
+%>
+
+<script type="text/javascript">
+	var oper;
+	jQuery(function($) {
+		// 页面方法
+		oper = {
+			width : 400,
+			height : 500,
+			form : document.form1,
+			list : function() {
+				var nombre_h = $("#nombre_h").val();
+				var url = 'system/hotel/list';
+				if(nombre_h != null && nombre_h != '')
+				{
+					url = 'system/hotel/list/'+nombre_h;
+				}
+				form1.action = url;
+				form1.submit();
+			},
+			pushHotel : function(codigo_hotel,obj) {
+				var tjmoy = $(obj).parents("tr").find(".tj").val();
+				var usdRate = $(obj).parents("tr").find(".usdrate").val();
+				if(tjmoy == null || tjmoy == '' || tjmoy < 0.0)
+				{
+					alert("非法的酒店抬价金额！！！");
+					return false;
+				}
+				if(usdRate == null || usdRate == '' || usdRate <= 0.0)
+				{
+					alert("非法的美元汇率！！！");
+					return false;
+				}
+				var url = 'system/hotel/pushHotel?codigo_hotel='+codigo_hotel+'&moy='+tjmoy+'&usdrate='+usdRate;
+				$.post(url,function(data,status){
+			        alert("酒店信息已经推送到携程，请在5分钟之后查看推送状态，请勿重复推送！");
+			    });
+				return true;
+			},
+			updateRate : function(){
+				var usdRate = $("#usdRate").val();
+				if(usdRate != null && usdRate != '' && usdRate > 1.0)
+				{
+					var url = 'system/hotel/updateRate?usdRate='+usdRate;
+					$.post(url,function(data,status){
+				        alert("修改所有酒店的最新汇率成功，请勿重复修改！");
+				    });
+					return true;
+				}
+				else
+				{
+					alert("汇率不能为空！");
+					return false;
+				}
+			},
+			updateRemark : function(codigo_hotel,obj){
+				var remark = $(obj).parents("tr").find(".remark").val();
+				if(remark != null && remark != '')
+				{
+					var url = 'system/hotel/updateRemark?codigo_hotel='+codigo_hotel+'&remark='+remark;
+					$.post(encodeURI(encodeURI(url)),function(data,status){
+				        alert("修改备注信息成功，请勿重复修改！");
+				    });
+					return true;
+				}
+				else
+				{
+					alert("备注信息不能为空！");
+					return false;
+				}
+			}
+		};
+		//显示Menu索引
+		showMenu('page_hotel');
+	});
+	
+	//分页
+	var paginator = function(page) {
+		oper.list();
+	};
+</script>
+<%
+};
+var bodyContent = {
+%>
+
+	<!-- 菜单 -->
+	<% include("/pages/template/menu.html"){} %>
+	
+	<form name="form2" action="" method="post" class="form-inline" role="form">
+	<div class="form-group" style="margin-top: 20px;margin-bottom: 10px;">
+		    <label for="myhl" class="control-label"> 美元汇率 </label>
+		    <div class="col-sm-10" style="margin-top: -10px;">
+		    	<input name="usdRate" class="form-control" type="text" id="usdRate" 
+		    		value="${rate.usdRate}"  placeholder="美元汇率" style="margin-left: 100px;">
+		    </div>
+		  </div>
+		&nbsp;&nbsp;&nbsp;
+		<a href="javascript:void(0);" class="btn btn-sm btn-success" onclick="oper.updateRate();">修改所有酒店的最新汇率，勿重复操作</a> 
+	</form>
+	
+	<form name="form1" action="" method="post"  class="form-inline" role="form">
+		<div class="tableSearch">
+			<%  //查询列表 %>
+						<div class="form-group">
+					<input id="nombre_h" class="form-control" type="text" name="nombre_h" value="${nombre_h!''}" 
+						placeholder="请输入酒店名称" />
+			</div>
+			<div class="form-group">
+				<select name="ctry" class="form-control" >
+					<option value="-1">选择常用国家</option>
+					<% for(ct in country){ %>
+						<option value="${ct.dict_name}">${ct.dict_name}</option>
+					<% } %>
+				</select>
+			</div>
+			<div class="form-group">
+				<select name="prov" class="form-control"   >
+					<option value="-1" >选择常用城市</option>
+					<% for(pv in province){ %>
+						<option value="${pv.detail_name}">${pv.detail_name}</option>
+					<% } %>
+				</select>
+			</div>
+			
+			<div class="form-group">
+				<select name="ps" class="form-control"   >
+					<option value="0" ${ps==0?"selected":"" }>未推送酒店</option>
+					<option value="1" ${ps==1?"selected":"" }>已推送酒店--已推送</option>
+					<option value="2" ${ps==2?"selected":"" }>已推送酒店--待匹配（Pedding）</option>
+					<option value="3" ${ps==3?"selected":"" }>已推送酒店--匹配成功（Active）</option>
+					<option value="4" ${ps==4?"selected":"" }>已推送酒店--匹配失败（Failed）</option>
+				</select>
+			</div>
+			
+			<button type="button" class="btn btn-default" onclick="oper.list();" name="search">
+			 		<span class="glyphicon glyphicon-search"></span> 查 询
+			</button>
+			<button type="button" class="btn btn-default" onclick="resetForm();">
+			 		<span class="glyphicon glyphicon-refresh"></span> 重 置
+			</button>
+		</div>
+		
+		<!-- 数据列表 -->
+		<table class="table table-striped table-bordered table-hover">
+			<thead>
+				<tr>
+					<%  // 列表头部 %>
+					<th name="codigo_hotel">代码</th> 
+					<th name="pais" class="sorting">名称</th> 
+					<th name="provincia">经度</th> 
+					<th name="poblacion">纬度</th> 
+					<th name="nombre_h">地址</th> 
+					<th name="ctripHotelCode">携程数据</th>
+					<th name="ctripHotelCode">美元汇率(元)</th> 
+					<th name="ctripHotelCode">抬价金额(元)</th>  
+					<th name="ctripHotelCode">备注</th> 
+					<th width="20%">推送数据到携程</th>
+				</tr>
+			</thead>
+			<tbody>
+			<% for(item in page.list){ %>
+				<tr>
+					<td>${item.codigo_hotel}</td>
+					<td>${item.nombre_h}</td> 
+					<td>${item.longitude}</td> 
+					<td>${item.latitude}</td> 
+					<td>${item.direccion}</td> 
+					<td>
+						<% if(item.status==4) { %>
+							${item.ctripinfo}
+						<% } else{ %>
+							${item.ctripHotelCode}
+						<% } %>
+					</td>
+					<td>
+						<% if(item.status == 3) { %>
+							${item.usdrate}
+						<% } else{ %>
+							<input class="form-control usdrate" type="text" name="ctriprtdesc_usdrate" style="width:80px;" value="${item.usdrate}" placeholder="美元汇率" />
+						<% } %>
+					</td>
+					<td>
+						<input class="form-control tj" type="text" name="ctriprtdesc_tj" style="width:80px;" value="${item.tj}" placeholder="抬价金额" />
+					</td> 
+					<td>
+						<input class="form-control remark" type="text" name="remark" style="width:80px;" value="${item.remark}" placeholder="备注信息" />
+					</td>
+				<td>
+					<!--
+					<a href="javascript:void(0);" id="all" ${item.status>1?"disabled":""}  class="btn btn-sm btn-primary" onclick="oper.push('${item.codigo_hotel}');">一键推送</a>
+					-->
+					<a href="javascript:void(0);" id="jd" class="btn btn-sm btn-danger" onclick="oper.pushHotel('${item.codigo_hotel}',this);">推送酒店</a>  
+					<a href="system/hotel/GetRTRP/${item.codigo_hotel}" id="rtrp" class="btn btn-sm btn-danger">推送房型数据</a> 
+					<br>
+					<!--
+					<a href="javascript:void(0);" id="rs" class="btn btn-sm btn-danger" onclick="oper.pushRS('${item.codigo_hotel}');">房态</a>
+					<a href="javascript:void(0);" id="rp" class="btn btn-sm btn-danger" onclick="oper.pushRP('${item.codigo_hotel}');">房价</a>
+					-->
+					<a href="system/hotel/roomDetails?codigo_hotel=${item.codigo_hotel}" target="_blank" id="fxlb" ${item.status!=3?"disabled":""} style="margin-top:10px;" class="btn btn-sm btn-success">查看推送详情</a>
+					<a href="javascript:void(0);" id="remark_b" class="btn btn-sm btn-success" style="margin-top:10px;" onclick="oper.updateRemark('${item.codigo_hotel}',this);">备注</a>
+				</td>
+				</tr>
+			<% } %>
+			</tbody>
+		</table>
+		<%include("/pages/includes/paginator.html"){} %>
+	</form>
+<%}; %>
+
+
+<% layout("/pages/template/_layout.html",{head:headContent,body:bodyContent}){ %>
+<%} %>

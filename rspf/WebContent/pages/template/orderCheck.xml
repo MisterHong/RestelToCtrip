@@ -1,0 +1,58 @@
+<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <soap:Body>
+        <OTA_HotelAvailRS xmlns="http://www.opentravel.org/OTA/2003/05" EchoToken="C201408221129" PrimaryLangID="en-us" Version="2.3" TimeStamp="#(TimeStamp)">
+            <Success />
+            <RoomStays>
+            	#for(rs : roomStays)
+                #for(rp : rs.getRegList())
+                <RoomStay>
+                    <RoomTypes>
+                        <RoomType RoomTypeCode="#(rs.getRtCode())">
+                        	<RoomDescription />
+                        </RoomType>
+                    </RoomTypes>
+                    <RatePlans>
+                        <RatePlan RatePlanCode="#(rp.getRpCode())">
+                            <CancelPenalties>
+                                <CancelPenalty>
+                                    <PenaltyDescription>
+                                        <Text>#(rp.getCancelPenalty())</Text>
+                                    </PenaltyDescription>
+                                    <AmountPercent NmbrOfNights="1" TaxInclusive="true" />
+                                    #(rp.getDeadline())
+                                </CancelPenalty>
+                            </CancelPenalties>
+                            <MealsIncluded Breakfast="#(rp.isBF())" Lunch="#(rp.isLUN())" Dinner="#(rp.isBD())" NumberOfMeal="#(rp.getNumberOfMeal())" />
+                        </RatePlan>
+                    </RatePlans>
+                    <RoomRates>
+                        <RoomRate RoomTypeCode="#(rs.getRtCode())" RatePlanCode="#(rp.getRpCode())" RatePlanCategory="501">
+                            <Rates>
+                            	#for(rl : rp.getLinList())
+                                <Rate EffectiveDate="#(rl.getStart())" ExpireDate="#(rl.getEnd())">
+                                    <Base AmountBeforeTax="#(rl.getPrr())" AmountAfterTax="#(rl.getPrr())" CurrencyCode="CNY">
+                                        <Taxes CurrencyCode="CNY">
+					                    	<Tax Percent="0" ChargeUnit="0" Code="0" />
+					                    </Taxes>
+                                    </Base>
+                                </Rate>
+                                #end
+                            </Rates>
+                            <Total AmountBeforeTax="#(rp.getTotal())" AmountAfterTax="#(rp.getTotal())" CurrencyCode="CNY" />
+                        </RoomRate>
+                    </RoomRates>
+                    <GuestCounts>
+                        <GuestCount AgeQualifyingCode="10" Count="#(rs.getGuestCount())" />
+                    </GuestCounts>
+                </RoomStay>
+                #end
+                #end
+            </RoomStays>
+            <HotelStays>
+                <HotelStay>
+                    <BasicPropertyInfo HotelCode="#(htcode)" HotelName="#(htname)" />
+                </HotelStay>
+            </HotelStays>
+        </OTA_HotelAvailRS>
+    </soap:Body>
+</soap:Envelope>

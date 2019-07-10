@@ -1,0 +1,97 @@
+<% 
+	var headContent = {
+	include("/pages/template/head.html"){}
+%>
+
+<script type="text/javascript">
+	var oper;
+	jQuery(function($) {
+		// 页面方法
+		oper = {
+			width : 400,
+			height : 500,
+			form : document.form1,
+			list : function() {
+				var url = 'system/order/list';
+				this.form.action = url;
+				this.form.submit();
+			},
+			push : function() {
+				/* var url = 'system/hotel/push';
+				$.post(url,function(data,status){
+			        alert("Data: " + data + "nStatus: " + status);
+			    }); */
+			},
+			save : function(){
+				/* var oyhl = $("#euroRate").val();
+				var myhl = $("#usdRate").val();
+				if(myhl != null && myhl != '' && oyhl != null &&  oyhl != '')
+				{
+					var url = 'system/hotel/save';
+					this.form.action = url;
+					this.form.submit();
+				}
+				else
+				{
+					alert("汇率不能为空！");
+				} */
+			} 
+		};
+		//显示Menu索引
+		showMenu('page_order');
+	});
+	
+	//分页
+	var paginator = function(page) {
+		oper.list();
+	};
+</script>
+
+<%
+};
+var bodyContent = {
+%>
+
+	<!-- 菜单 -->
+	<% include("/pages/template/menu.html"){} %>
+	<form name="form1" action="" method="post"  class="form-inline" role="form">
+		<!-- 数据列表 -->
+		<table class="table table-striped table-bordered table-hover">
+			<thead>
+				<tr>
+					<%  // 列表头部 %>
+					<th name="codigo_hotel">ID</th> 
+					<th name="pais">顾客姓名</th> 
+					<th name="provincia">顾客人数</th> 
+					<th name="poblacion">入住时间</th> 
+					<th name="nombre_h">退房时间</th> 
+					<th name="categoria">酒店名称</th>
+					<th name="num_habitaciones">酒店价格</th>
+					<th name="num_habitaciones">状态</th>  
+					<th width="15%">操作</th>
+				</tr>
+			</thead>
+			<tbody>
+			<% for(item in page.list){ %>
+				<tr>
+				<td>${item.id}</td>
+					<td>${item.customerName}</td> 
+					<td>${item.customerCount}</td> 
+					<td>${item.StartTime}</td> 
+					<td>${item.EndTime}</td> 
+					<td>${item.hotelName}</td> 
+					<td>${item.orderState}</td>
+				<td>
+				<a href="javascript:void(0);" class="btn btn-sm btn-primary" onclick="oper.push(${item.id});">推送到携程</a> 
+				</td>
+				</tr>
+			<% } %>
+			</tbody>
+		</table>
+		<%include("/pages/includes/paginator.html"){} %>
+	</form>
+<%}; %>
+
+
+<% layout("/pages/template/_layout.html",{head:headContent,body:bodyContent}){ %>
+<%} %>

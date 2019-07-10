@@ -1,0 +1,68 @@
+<%
+var headContent = {
+include("/pages/template/head.html"){}
+%>
+<script type="text/javascript">
+    var oper;
+    jQuery(function($) {
+        // 页面方法
+        oper = {
+            width : 450,
+            height : 500,
+            form : document.form1,
+            list : function() {
+                var url = 'system/hotel/rprice';
+                this.form.action = url;
+                this.form.submit();
+            }
+        };
+        //显示Menu索引
+        showMenu('page_hotel');
+    });
+</script>
+
+<%
+};
+
+var bodyContent = {
+%>
+<form name="form1" action="" method="post"  class="form-inline" role="form">
+	<!-- 菜单 -->
+	<% include("/pages/template/menu.html"){} %>
+	<!-- 数据列表 -->
+	<table class="table table-striped table-bordered table-hover">
+			<thead>
+				<tr>
+					<th name="date">时间戳</th>
+					<th name="date">基础cod</th>
+					<th name="date">售卖cod</th>
+					<th name="date">日期</th>
+					<th name="rp">供应商价格</th> 
+					<th name="rate">汇率</th>
+					<th name="tj">抬价</th>
+					<th name="ctrip">携程价格</th>
+					<th name="ct">创建时间</th>
+					<th name="at">更新时间</th>
+				</tr>
+			</thead>
+			<tbody>
+			<% for(item in rpricelist){ %>
+				<tr>
+					<td>${item.timestamp}</td>
+					<td>${item.rtcode}</td>
+					<td>${item.rpcode}</td>
+					<td>${item.start}</td>
+					<td>${item.rprice}</td>
+					<td>${item.rate}</td>
+					<td>${item.tj}</td>
+					<td>${item.price}</td>
+					<td>${item.createtime}</td>
+					<td>${item.altertime}</td>
+				</tr>
+			<% } %>
+			</tbody>
+	</table>
+</form>
+<%}; %>
+<% layout("/pages/template/_layout.html",{head:headContent,body:bodyContent}){ %>
+<%} %>

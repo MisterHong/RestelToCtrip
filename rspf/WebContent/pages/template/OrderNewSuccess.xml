@@ -1,0 +1,20 @@
+<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <soap:Body>
+		<OTA_HotelResRS Version="2.3" EchoToken="201403211421" xmlns="http://www.opentravel.org/OTA/2003/05" xmlns:xsi="http://www.w3.org/2001/XMLSchemainstance">
+		    <Success />
+		    <Warnings>
+		        #(warning)
+		    </Warnings>
+		    <HotelReservations>
+		        <HotelReservation ResStatus="S">
+		            <ResGlobalInfo>
+		                <HotelReservationIDs>
+		                    <HotelReservationID ResID_Value="#(ResID502)" ResID_Type="502" />
+		                    <HotelReservationID ResID_Value="#(ResID501)" ResID_Type="501" />
+		                </HotelReservationIDs>
+		            </ResGlobalInfo>
+		        </HotelReservation>
+		    </HotelReservations>
+		</OTA_HotelResRS>
+    </soap:Body>
+</soap:Envelope>
