@@ -177,12 +177,6 @@ public class OrderCtripController  extends BaseProjectController {
 					}
 					String ct = "1-0";
 					StringBuffer xml = new StringBuffer();
-					if(count > adult)
-					{
-						log.info("count数大于入住人数，直接返回无房！");
-						renderXml("/pages/template/NoRome.xml");
-					}
-					
 					if(null != check.getQuantity())
 					{
 						//Quantity Number of rooms, maximum value is 20
@@ -192,6 +186,46 @@ public class OrderCtripController  extends BaseProjectController {
 							xml.append("<numhab"+i+">1</numhab"+i+">"); //房间类型1
 					    	xml.append("<paxes"+i+">"+adult+"-0</paxes"+i+">"); //房间客人类别
 						}
+					}
+					else
+					{
+						if(count > adult)
+						{
+							ct = adult+"-0";
+							int zc = count / adult;
+							int ys = count % adult;
+							if(ys == 0)
+							{
+								for (int i = 1; i < zc; i++) 
+								{
+									xml.append("<numhab"+(i+1)+">1</numhab"+(i+1)+">"); //房间类型1
+			    			    	xml.append("<paxes"+(i+1)+">"+adult+"-0</paxes"+(i+1)+">"); //房间客人类别
+								}
+							}
+							else
+							{
+								int i = 1;
+								for (; i < zc; i++) 
+								{
+									xml.append("<numhab"+(i+1)+">1</numhab"+(i+1)+">"); //房间类型1
+			    			    	xml.append("<paxes"+(i+1)+">"+adult+"-0</paxes"+(i+1)+">"); //房间客人类别
+								}
+								xml.append("<numhab"+(i+1)+">1</numhab"+(i+1)+">"); //房间类型1
+		    			    	xml.append("<paxes"+(i+1)+">"+ys+"-0</paxes"+(i+1)+">"); //房间客人类别
+							}
+						}
+						{
+							ct = count+"-0";
+						}
+					}
+					
+					if(count > adult)
+					{
+						ct = adult+"-0";
+					}
+					else
+					{
+						ct = count+"-0";
 					}
 					
 					String xmlInfo110 = HttpUtils.GetRestelXml110(check.getHotelCode(),hotelInfoRecord.getStr("pais"),hotelInfoRecord.getStr("codprovincia"), start, end, "1", ct,xml.toString());
