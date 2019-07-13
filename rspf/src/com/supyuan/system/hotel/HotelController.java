@@ -5,7 +5,6 @@ import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import org.apache.log4j.Logger;
@@ -131,25 +130,20 @@ public class HotelController extends BaseProjectController {
 	{
 		String codigo_hotel = getPara();
 		Record hotelInfoRecord = Db.findById("sys_hotels_info", "codigo_hotel", codigo_hotel);
-		List<Record> rtlist = new ArrayList<Record>();
+		//先删除临时数据
+		Db.update("delete from sys_hotels_temp_roomtype where hotelcode='"+codigo_hotel+"'");
 		try {
-			 //查询出房型，并存储到数据库
-		     for (int index = 0;index < 2;index++)
-		     {
-		  		rtlist = Db.find("select r1.rtcode,r2.romeDescription,r2.adults,r2.childs,r2.ctriprtcode from sys_hotels_roomtype r1 "
-						+ "inner join sys_rome_type r2 on r1.rtcode = r2.roomName "
-						+ "where r1.hotelcode = '"+codigo_hotel+"' group by r1.rtcode");
-		        if ((rtlist != null) && (rtlist.size() > 0)) break;
-		        String start = DateUtils.getAddDayNow("MM/dd/yyyy", index);
-		        String end = DateUtils.getAddDayNow("MM/dd/yyyy", index+1);
-	            String xmlInfo110 = HttpUtils.GetRestelXml110(hotelInfoRecord.getStr("codigo_hotel"), hotelInfoRecord.getStr("pais"), "", start, end, "1", "2-0", "");
-	            log.info("获取酒店："+codigo_hotel+"房型请求报文："+xmlInfo110);
-	            String result110 = HttpUtils.HttpClientPost(xmlInfo110);
-	            log.info("获取酒店："+codigo_hotel+"房型响应报文："+result110);
-	            InputStream stream110 = new ByteArrayInputStream(result110.getBytes());
-	            svc.Parse110XmlWithRTRP(stream110, hotelInfoRecord.getStr("codigo_hotel"));
-		      }
-		} catch (Exception e) {
+	    	//开始和结束日期都向后
+	        String start = DateUtils.getAddDayNow("MM/dd/yyyy", 20);
+	        String end = DateUtils.getAddDayNow("MM/dd/yyyy", 21);
+            String xmlInfo110 = HttpUtils.GetRestelXml110(hotelInfoRecord.getStr("codigo_hotel"), hotelInfoRecord.getStr("pais"), "", start, end, "1", "2-0", "");
+            log.info("获取酒店："+codigo_hotel+"房型请求报文："+xmlInfo110);
+            String result110 = HttpUtils.HttpClientPost(xmlInfo110);
+            log.info("获取酒店："+codigo_hotel+"房型响应报文："+result110);
+            InputStream stream110 = new ByteArrayInputStream(result110.getBytes());
+            svc.Parse110XmlWithRTRP(stream110, hotelInfoRecord.getStr("codigo_hotel"));
+		} catch (Exception e) 
+		{
 			log.error("获取酒店："+codigo_hotel+"房型时出错，原因为："+e.getMessage());
 		}
 		
@@ -426,19 +420,157 @@ public class HotelController extends BaseProjectController {
 		renderHtml(buffer.toString());
 	}
 	
+	public void deactivatedRoomType()
+	{
+		try {
+			String ctrip_api_url = Config.getStr("ctrip_api_url");
+			List<Record> fqRecordList = Db.find("select * from sys_hotel_rtfq where status = 0");
+			for (Record record : fqRecordList) {
+				Record tempRecord = Db.findFirst("select hot_codcobol from sys_hotels where ctripHotelCode = '"+record.getStr("ctid")+"'");
+				String codigo_hotel = tempRecord.getStr("hot_codcobol");
+				if(null == codigo_hotel || "".equals(codigo_hotel))
+					continue;
+				String rtcode = record.getStr("rtcode");
+				String rpcode = record.getStr("rpcode");
+				String adults = record.getStr("adults");
+				String desc = record.getStr("desc");
+				StringBuilder xmlinfo = new StringBuilder();
+		    	xmlinfo.append("<soap:Envelope xmlns:soap=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\">");
+		    	xmlinfo.append("<soap:Body>");
+				xmlinfo.append("<OTA_HotelInvNotifRQ Target=\"Production\" PrimaryLangID=\"en-us\" Version=\"1.0\" TimeStamp=\""+DateUtils.getNowByGMT8()+"\" xmlns=\"http://www.opentravel.org/OTA/2003/05\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">");
+				xmlinfo.append("  <POS>");
+				xmlinfo.append("    <Source>");
+				xmlinfo.append("    	<RequestorID ID=\"hangye\" MessagePassword=\"hangye_101019\" Type=\"1\">");
+				xmlinfo.append("    		<CompanyName Code=\"C\" CodeContext=\"978\" />");
+				xmlinfo.append("    	</RequestorID>");
+				xmlinfo.append("    </Source>");
+				xmlinfo.append("  </POS>");
+				xmlinfo.append("  <SellableProducts HotelCode=\""+codigo_hotel+"\">");
+				xmlinfo.append("    <SellableProduct InvTypeCode=\""+rtcode+"\" InvStatusType=\"Deactivated\">");
+				xmlinfo.append("      <GuestRoom>");
+				xmlinfo.append("        <Occupancy AgeQualifyingCode=\"10\" MinOccupancy=\"1\" MaxOccupancy=\""+adults+"\"/>");	//成人
+				xmlinfo.append("        <Currency Code=\"CNY\"/>");
+				xmlinfo.append("        <Description>");
+				xmlinfo.append("          <Text Language=\"en-us\">"+desc+"</Text>");
+				xmlinfo.append("        </Description>");
+				xmlinfo.append("      </GuestRoom>");
+				xmlinfo.append("    </SellableProduct>");
+				xmlinfo.append("  </SellableProducts>");
+				xmlinfo.append("</OTA_HotelInvNotifRQ>");
+				xmlinfo.append("</soap:Body>");
+				xmlinfo.append("</soap:Envelope>");
+				
+				String resultrt =  HttpsUtils.doPost(ctrip_api_url, xmlinfo.toString());
+				if(resultrt.contains("Success")){
+					Db.update("update sys_hotel_rtfq set hid='"+codigo_hotel+"',status=1 where id="+record.getInt("id"));
+				}
+				log.info("废弃结果："+resultrt);
+
+				StringBuilder xmlinfo2 = new StringBuilder();
+		    	xmlinfo2.append("<soap:Envelope xmlns:soap=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\">");
+		    	xmlinfo2.append("<soap:Body>");
+		    	xmlinfo2.append("<OTA_HotelRatePlanNotifRQ Target=\"Production\" PrimaryLangID=\"en-us\" Version=\"1.0\" TimeStamp=\""+DateUtils.getNowByGMT8()+"\" xmlns=\"http://www.opentravel.org/OTA/2003/05\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">");
+				xmlinfo2.append("  <POS>");
+				xmlinfo2.append("    <Source>");
+				xmlinfo2.append("    	<RequestorID ID=\"hangye\" MessagePassword=\"hangye_101019\" Type=\"1\">");
+				xmlinfo2.append("    		<CompanyName Code=\"C\" CodeContext=\"978\" />");
+				xmlinfo2.append("    	</RequestorID>");
+				xmlinfo2.append("    </Source>");
+				xmlinfo2.append("  </POS>");
+				xmlinfo2.append("  <RatePlans HotelCode=\""+codigo_hotel+"\">");
+				xmlinfo2.append("    <RatePlan RatePlanCode=\""+rpcode+"\" RatePlanCategory=\"501\" RatePlanStatusType=\"Deactivated\">");
+				xmlinfo2.append("    	<BookingRules>");
+				xmlinfo2.append("    		<BookingRule MaxTotalOccupancy=\""+adults+"\" />");
+				xmlinfo2.append("    	</BookingRules>");
+				xmlinfo2.append("    	<SellableProducts>");
+				xmlinfo2.append("    		<SellableProduct InvTypeCode=\""+rtcode+"\" />");
+				xmlinfo2.append("    	</SellableProducts>");
+				xmlinfo2.append("    </RatePlan>");
+				xmlinfo2.append("  </RatePlans>");
+				xmlinfo2.append("</OTA_HotelRatePlanNotifRQ>");
+				xmlinfo2.append("</soap:Body>");
+				xmlinfo2.append("</soap:Envelope>");
+				
+				String resultsubrt =  HttpsUtils.doPost(ctrip_api_url, xmlinfo2.toString());
+				if(resultsubrt.contains("Success")){
+					Db.update("update sys_hotel_rtfq set status=2 where id="+record.getInt("id"));
+				}
+				log.info("废弃结果2："+resultsubrt);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
 	
 	public static void main(String[] args) 
 	{
 		String ctrip_api_url = Config.getStr("ctrip_api_url");
-		String codigo_hotel = "146185";
-		String rtcode = "TW";
+		String codigo_hotel = "162307";
+		String rtcode = "02";
 		String rpcode = "OB";
-		String ctripStarTime = "2019-07-04";
-		String ctripEndTime = "2019-09-13";
-		String status = "Close";//Close
-		String xmlRomeStatus = HttpUtils.PushCtripXmlRoomStatus(codigo_hotel, rtcode, rpcode, status,ctripStarTime, ctripEndTime);
-		log.info("酒店："+codigo_hotel+"，推送房态报文："+xmlRomeStatus);
-		String resultRS = HttpsUtils.doPost(ctrip_api_url, xmlRomeStatus);
-		log.info("酒店："+codigo_hotel+"，推送房态获取到的携程数据结果："+resultRS);
+		String adults = "4";
+		String desc = "Double or Twin SUPERIOR";
+		StringBuilder xmlinfo = new StringBuilder();
+    	xmlinfo.append("<soap:Envelope xmlns:soap=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\">");
+    	xmlinfo.append("<soap:Body>");
+		xmlinfo.append("<OTA_HotelInvNotifRQ Target=\"Production\" PrimaryLangID=\"en-us\" Version=\"1.0\" TimeStamp=\""+DateUtils.getNowByGMT8()+"\" xmlns=\"http://www.opentravel.org/OTA/2003/05\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">");
+		xmlinfo.append("  <POS>");
+		xmlinfo.append("    <Source>");
+		xmlinfo.append("    	<RequestorID ID=\"hangye\" MessagePassword=\"hangye_101019\" Type=\"1\">");
+		xmlinfo.append("    		<CompanyName Code=\"C\" CodeContext=\"978\" />");
+		xmlinfo.append("    	</RequestorID>");
+		xmlinfo.append("    </Source>");
+		xmlinfo.append("  </POS>");
+		xmlinfo.append("  <SellableProducts HotelCode=\""+codigo_hotel+"\">");
+		xmlinfo.append("    <SellableProduct InvTypeCode=\""+rtcode+"\" InvStatusType=\"Deactivated\">");
+		xmlinfo.append("      <GuestRoom>");
+		xmlinfo.append("        <Occupancy AgeQualifyingCode=\"10\" MinOccupancy=\"1\" MaxOccupancy=\""+adults+"\"/>");	//成人
+		xmlinfo.append("        <Currency Code=\"CNY\"/>");
+		xmlinfo.append("        <Description>");
+		xmlinfo.append("          <Text Language=\"en-us\">"+desc+"</Text>");
+		xmlinfo.append("        </Description>");
+		xmlinfo.append("      </GuestRoom>");
+		xmlinfo.append("    </SellableProduct>");
+		xmlinfo.append("  </SellableProducts>");
+		xmlinfo.append("</OTA_HotelInvNotifRQ>");
+		xmlinfo.append("</soap:Body>");
+		xmlinfo.append("</soap:Envelope>");
+		
+//		String resultrt =  HttpsUtils.doPost(ctrip_api_url, xmlinfo.toString());
+//		log.info("废弃结果："+resultrt);
+
+		
+		StringBuilder xmlinfo2 = new StringBuilder();
+    	xmlinfo2.append("<soap:Envelope xmlns:soap=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\">");
+    	xmlinfo2.append("<soap:Body>");
+    	xmlinfo2.append("<OTA_HotelRatePlanNotifRQ Target=\"Production\" PrimaryLangID=\"en-us\" Version=\"1.0\" TimeStamp=\""+DateUtils.getNowByGMT8()+"\" xmlns=\"http://www.opentravel.org/OTA/2003/05\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">");
+		xmlinfo2.append("  <POS>");
+		xmlinfo2.append("    <Source>");
+		xmlinfo2.append("    	<RequestorID ID=\"hangye\" MessagePassword=\"hangye_101019\" Type=\"1\">");
+		xmlinfo2.append("    		<CompanyName Code=\"C\" CodeContext=\"978\" />");
+		xmlinfo2.append("    	</RequestorID>");
+		xmlinfo2.append("    </Source>");
+		xmlinfo2.append("  </POS>");
+		xmlinfo2.append("  <RatePlans HotelCode=\""+codigo_hotel+"\">");
+		xmlinfo2.append("    <RatePlan RatePlanCode=\""+rpcode+"\" RatePlanCategory=\"501\" RatePlanStatusType=\"Deactivated\">");
+		xmlinfo2.append("    	<BookingRules>");
+		xmlinfo2.append("    		<BookingRule MaxTotalOccupancy=\""+adults+"\" />");
+		xmlinfo2.append("    	</BookingRules>");
+		xmlinfo2.append("    	<SellableProducts>");
+		xmlinfo2.append("    		<SellableProduct InvTypeCode=\""+rtcode+"\" />");
+		xmlinfo2.append("    	</SellableProducts>");
+		xmlinfo2.append("    </RatePlan>");
+		xmlinfo2.append("  </RatePlans>");
+		xmlinfo2.append("</OTA_HotelRatePlanNotifRQ>");
+		xmlinfo2.append("</soap:Body>");
+		xmlinfo2.append("</soap:Envelope>");
+		
+		String resultsubrt =  HttpsUtils.doPost(ctrip_api_url, xmlinfo2.toString());
+		log.info("废弃结果2："+resultsubrt);
+//		
+		String hotelStatus = HttpUtils.PushCtripXmlSearch(codigo_hotel);
+		log.info("ctripHotelStatusGet携程状态请求报文："+hotelStatus);
+		String resultStatus = HttpsUtils.doPost(ctrip_api_url, hotelStatus);
+		System.out.println(resultStatus);
 	}
 }
