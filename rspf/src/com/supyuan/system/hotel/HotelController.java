@@ -424,7 +424,7 @@ public class HotelController extends BaseProjectController {
 	{
 		try {
 			String ctrip_api_url = Config.getStr("ctrip_api_url");
-			List<Record> fqRecordList = Db.find("select * from sys_hotel_rtfq where status = 0");
+			List<Record> fqRecordList = Db.find("select * from sys_hotels_rtfq where status = 0");
 			for (Record record : fqRecordList) {
 				Record tempRecord = Db.findFirst("select hot_codcobol from sys_hotels where ctripHotelCode = '"+record.getStr("ctid")+"'");
 				String codigo_hotel = tempRecord.getStr("hot_codcobol");
@@ -462,7 +462,7 @@ public class HotelController extends BaseProjectController {
 				
 				String resultrt =  HttpsUtils.doPost(ctrip_api_url, xmlinfo.toString());
 				if(resultrt.contains("Success")){
-					Db.update("update sys_hotel_rtfq set hid='"+codigo_hotel+"',status=1 where id="+record.getInt("id"));
+					Db.update("update sys_hotels_rtfq set hid='"+codigo_hotel+"',status=1 where id="+record.getInt("id"));
 				}
 				log.info("废弃结果："+resultrt);
 
@@ -493,7 +493,7 @@ public class HotelController extends BaseProjectController {
 				
 				String resultsubrt =  HttpsUtils.doPost(ctrip_api_url, xmlinfo2.toString());
 				if(resultsubrt.contains("Success")){
-					Db.update("update sys_hotel_rtfq set status=2 where id="+record.getInt("id"));
+					Db.update("update sys_hotels_rtfq set status=2 where id="+record.getInt("id"));
 				}
 				log.info("废弃结果2："+resultsubrt);
 			}
