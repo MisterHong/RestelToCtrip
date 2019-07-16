@@ -169,11 +169,10 @@ public class OrderCtripController  extends BaseProjectController {
 					int count = Integer.parseInt(check.getCount());
 					//获取酒店房型的最大入住人数
 					Record record = Db.findFirst("select adults from sys_hotels_roomtype where hotelcode ='"+check.getHotelCode()+"' and rtcode='"+check.getRoomTypeCode()+"'");
-					String adults = record.get("adults");
 					int adult = 2;
-					if(null != adults)
+					if(null != record.getInt("adults"))
 					{
-						adult = Integer.parseInt(adults);
+						adult = record.getInt("adults");
 					}
 					String ct = "1-0";
 					StringBuffer xml = new StringBuffer();
@@ -234,7 +233,7 @@ public class OrderCtripController  extends BaseProjectController {
 					System.out.println("供应商响应报文："+result110);
 					InputStream stream110 = new ByteArrayInputStream(result110.getBytes());
 					List<RomeStay> roomStays = HttpUtils.Parse110XmlWithRS(stream110,check.getRoomTypeCode(),roomTypeRecord.getStr("rtdesc"),check.getRatePlanCode(), (int)ts, check.getCount(),usdrate,tj,check.getStart());
-					if(null == roomStays)
+					if(null == roomStays || roomStays.size() == 0)
 					{
 						System.out.println("Case 2,roomStays == null 错误,返回无房间！");
 						renderXml("/pages/template/NoRome.xml");
@@ -450,11 +449,10 @@ public class OrderCtripController  extends BaseProjectController {
 			int count = Integer.parseInt(orderNew.getGuestCount());
 			//获取酒店房型的最大入住人数
 			Record rtrecord = Db.findFirst("select adults from sys_hotels_roomtype where hotelcode ='"+orderRoomStay.getHotelCode()+"' and rtcode='"+orderRoomStay.getRoomTypeCode()+"'");
-			String adults = rtrecord.get("adults");
 			int adult = 2;
-			if(null != adults)
+			if(null != rtrecord.getInt("adults"))
 			{
-				adult = Integer.parseInt(adults);
+				adult = rtrecord.getInt("adults");
 			}
 			int nulberUtils = 1;
 			String ct = "1-0";
