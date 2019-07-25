@@ -534,7 +534,7 @@ public class OrderCtripController  extends BaseProjectController {
 			{
 				StringBuffer buffer = new StringBuffer();
 				String titulo = "Sr.";//先生
-				String guestName = customers.get(0).getGivenName()+customers.get(0).getSurname();
+				String guestName = ((Customer)customers.get(0)).getGivenName() + " " + ((Customer)customers.get(0)).getSurname();
 				buffer.append("<paxes>");
 				for(Customer paxs :customers)
 				{

@@ -420,157 +420,169 @@ public class HotelController extends BaseProjectController {
 		renderHtml(buffer.toString());
 	}
 	
-	public void deactivatedRoomType()
-	{
-		try {
-			String ctrip_api_url = Config.getStr("ctrip_api_url");
-			List<Record> fqRecordList = Db.find("select * from sys_hotels_rtfq where status = 0");
-			for (Record record : fqRecordList) {
-				Record tempRecord = Db.findFirst("select hot_codcobol from sys_hotels where ctripHotelCode = '"+record.getStr("ctid")+"'");
-				String codigo_hotel = tempRecord.getStr("hot_codcobol");
-				if(null == codigo_hotel || "".equals(codigo_hotel))
-					continue;
-				String rtcode = record.getStr("rtcode");
-				String rpcode = record.getStr("rpcode");
-				String adults = record.getStr("adults");
-				String desc = record.getStr("desc");
-				StringBuilder xmlinfo = new StringBuilder();
-		    	xmlinfo.append("<soap:Envelope xmlns:soap=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\">");
-		    	xmlinfo.append("<soap:Body>");
-				xmlinfo.append("<OTA_HotelInvNotifRQ Target=\"Production\" PrimaryLangID=\"en-us\" Version=\"1.0\" TimeStamp=\""+DateUtils.getNowByGMT8()+"\" xmlns=\"http://www.opentravel.org/OTA/2003/05\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">");
-				xmlinfo.append("  <POS>");
-				xmlinfo.append("    <Source>");
-				xmlinfo.append("    	<RequestorID ID=\"hangye\" MessagePassword=\"hangye_101019\" Type=\"1\">");
-				xmlinfo.append("    		<CompanyName Code=\"C\" CodeContext=\"978\" />");
-				xmlinfo.append("    	</RequestorID>");
-				xmlinfo.append("    </Source>");
-				xmlinfo.append("  </POS>");
-				xmlinfo.append("  <SellableProducts HotelCode=\""+codigo_hotel+"\">");
-				xmlinfo.append("    <SellableProduct InvTypeCode=\""+rtcode+"\" InvStatusType=\"Deactivated\">");
-				xmlinfo.append("      <GuestRoom>");
-				xmlinfo.append("        <Occupancy AgeQualifyingCode=\"10\" MinOccupancy=\"1\" MaxOccupancy=\""+adults+"\"/>");	//成人
-				xmlinfo.append("        <Currency Code=\"CNY\"/>");
-				xmlinfo.append("        <Description>");
-				xmlinfo.append("          <Text Language=\"en-us\">"+desc+"</Text>");
-				xmlinfo.append("        </Description>");
-				xmlinfo.append("      </GuestRoom>");
-				xmlinfo.append("    </SellableProduct>");
-				xmlinfo.append("  </SellableProducts>");
-				xmlinfo.append("</OTA_HotelInvNotifRQ>");
-				xmlinfo.append("</soap:Body>");
-				xmlinfo.append("</soap:Envelope>");
-				
-				String resultrt =  HttpsUtils.doPost(ctrip_api_url, xmlinfo.toString());
-				if(resultrt.contains("Success")){
-					Db.update("update sys_hotels_rtfq set hid='"+codigo_hotel+"',status=1 where id="+record.getInt("id"));
-				}
-				log.info("废弃结果："+resultrt);
-
-				StringBuilder xmlinfo2 = new StringBuilder();
-		    	xmlinfo2.append("<soap:Envelope xmlns:soap=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\">");
-		    	xmlinfo2.append("<soap:Body>");
-		    	xmlinfo2.append("<OTA_HotelRatePlanNotifRQ Target=\"Production\" PrimaryLangID=\"en-us\" Version=\"1.0\" TimeStamp=\""+DateUtils.getNowByGMT8()+"\" xmlns=\"http://www.opentravel.org/OTA/2003/05\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">");
-				xmlinfo2.append("  <POS>");
-				xmlinfo2.append("    <Source>");
-				xmlinfo2.append("    	<RequestorID ID=\"hangye\" MessagePassword=\"hangye_101019\" Type=\"1\">");
-				xmlinfo2.append("    		<CompanyName Code=\"C\" CodeContext=\"978\" />");
-				xmlinfo2.append("    	</RequestorID>");
-				xmlinfo2.append("    </Source>");
-				xmlinfo2.append("  </POS>");
-				xmlinfo2.append("  <RatePlans HotelCode=\""+codigo_hotel+"\">");
-				xmlinfo2.append("    <RatePlan RatePlanCode=\""+rpcode+"\" RatePlanCategory=\"501\" RatePlanStatusType=\"Deactivated\">");
-				xmlinfo2.append("    	<BookingRules>");
-				xmlinfo2.append("    		<BookingRule MaxTotalOccupancy=\""+adults+"\" />");
-				xmlinfo2.append("    	</BookingRules>");
-				xmlinfo2.append("    	<SellableProducts>");
-				xmlinfo2.append("    		<SellableProduct InvTypeCode=\""+rtcode+"\" />");
-				xmlinfo2.append("    	</SellableProducts>");
-				xmlinfo2.append("    </RatePlan>");
-				xmlinfo2.append("  </RatePlans>");
-				xmlinfo2.append("</OTA_HotelRatePlanNotifRQ>");
-				xmlinfo2.append("</soap:Body>");
-				xmlinfo2.append("</soap:Envelope>");
-				
-				String resultsubrt =  HttpsUtils.doPost(ctrip_api_url, xmlinfo2.toString());
-				if(resultsubrt.contains("Success")){
-					Db.update("update sys_hotels_rtfq set status=2 where id="+record.getInt("id"));
-				}
-				log.info("废弃结果2："+resultsubrt);
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+	/**
+	 * 废弃房型,通过数据库导入，配合URL地址调用的方式去实现
+	 */
+	 public void deactivatedRoomType()
+	 {
+	    try
+	    {
+	      String ctrip_api_url = Config.getStr("ctrip_api_url");
+	      List<Record> fqRecordList = Db.find("select * from sys_hotels_rtfq where status = 0");
+	      for (Record record : fqRecordList)
+	      {
+	        Record tempRecord = Db.findFirst("select hot_codcobol from sys_hotels where ctripHotelCode = '" + record.getStr("ctid") + "'");
+	        String codigo_hotel = tempRecord.getStr("hot_codcobol");
+	        if ((codigo_hotel != null) && (!"".equals(codigo_hotel)))
+	        {
+	          String rtcode = record.getStr("rtcode");
+	          String rpcode = record.getStr("rpcode");
+	          String adults = record.getStr("adults");
+	          String desc = record.getStr("desc");
+	          StringBuilder xmlinfo = new StringBuilder();
+	          xmlinfo.append("<soap:Envelope xmlns:soap=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\">");
+	          xmlinfo.append("<soap:Body>");
+	          xmlinfo.append("<OTA_HotelInvNotifRQ Target=\"Production\" PrimaryLangID=\"en-us\" Version=\"1.0\" TimeStamp=\"" + DateUtils.getNowByGMT8() + "\" xmlns=\"http://www.opentravel.org/OTA/2003/05\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">");
+	          xmlinfo.append("  <POS>");
+	          xmlinfo.append("    <Source>");
+	          xmlinfo.append("    \t<RequestorID ID=\"hangye\" MessagePassword=\"hangye_101019\" Type=\"1\">");
+	          xmlinfo.append("    \t\t<CompanyName Code=\"C\" CodeContext=\"978\" />");
+	          xmlinfo.append("    \t</RequestorID>");
+	          xmlinfo.append("    </Source>");
+	          xmlinfo.append("  </POS>");
+	          xmlinfo.append("  <SellableProducts HotelCode=\"" + codigo_hotel + "\">");
+	          xmlinfo.append("    <SellableProduct InvTypeCode=\"" + rtcode + "\" InvStatusType=\"Deactivated\">");
+	          xmlinfo.append("      <GuestRoom>");
+	          xmlinfo.append("        <Occupancy AgeQualifyingCode=\"10\" MinOccupancy=\"1\" MaxOccupancy=\"" + adults + "\"/>");
+	          xmlinfo.append("        <Currency Code=\"CNY\"/>");
+	          xmlinfo.append("        <Description>");
+	          xmlinfo.append("          <Text Language=\"en-us\">" + desc + "</Text>");
+	          xmlinfo.append("        </Description>");
+	          xmlinfo.append("      </GuestRoom>");
+	          xmlinfo.append("    </SellableProduct>");
+	          xmlinfo.append("  </SellableProducts>");
+	          xmlinfo.append("</OTA_HotelInvNotifRQ>");
+	          xmlinfo.append("</soap:Body>");
+	          xmlinfo.append("</soap:Envelope>");
+	          
+	          String resultrt = HttpsUtils.doPost(ctrip_api_url, xmlinfo.toString());
+	          if (resultrt.contains("Success")) {
+	            Db.update("update sys_hotels_rtfq set hid='" + codigo_hotel + "',status=1 where id=" + record.getInt("id"));
+	          }
+	          log.info("废弃基础房型结果：" + resultrt);
+	          
+	          StringBuilder xmlinfo2 = new StringBuilder();
+	          xmlinfo2.append("<soap:Envelope xmlns:soap=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\">");
+	          xmlinfo2.append("<soap:Body>");
+	          xmlinfo2.append("<OTA_HotelRatePlanNotifRQ Target=\"Production\" PrimaryLangID=\"en-us\" Version=\"1.0\" TimeStamp=\"" + DateUtils.getNowByGMT8() + "\" xmlns=\"http://www.opentravel.org/OTA/2003/05\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">");
+	          xmlinfo2.append("  <POS>");
+	          xmlinfo2.append("    <Source>");
+	          xmlinfo2.append("    \t<RequestorID ID=\"hangye\" MessagePassword=\"hangye_101019\" Type=\"1\">");
+	          xmlinfo2.append("    \t\t<CompanyName Code=\"C\" CodeContext=\"978\" />");
+	          xmlinfo2.append("    \t</RequestorID>");
+	          xmlinfo2.append("    </Source>");
+	          xmlinfo2.append("  </POS>");
+	          xmlinfo2.append("  <RatePlans HotelCode=\"" + codigo_hotel + "\">");
+	          xmlinfo2.append("    <RatePlan RatePlanCode=\"" + rpcode + "\" RatePlanCategory=\"501\" RatePlanStatusType=\"Deactivated\">");
+	          xmlinfo2.append("    \t<BookingRules>");
+	          xmlinfo2.append("    \t\t<BookingRule MaxTotalOccupancy=\"" + adults + "\" />");
+	          xmlinfo2.append("    \t</BookingRules>");
+	          xmlinfo2.append("    \t<SellableProducts>");
+	          xmlinfo2.append("    \t\t<SellableProduct InvTypeCode=\"" + rtcode + "\" />");
+	          xmlinfo2.append("    \t</SellableProducts>");
+	          xmlinfo2.append("    </RatePlan>");
+	          xmlinfo2.append("  </RatePlans>");
+	          xmlinfo2.append("</OTA_HotelRatePlanNotifRQ>");
+	          xmlinfo2.append("</soap:Body>");
+	          xmlinfo2.append("</soap:Envelope>");
+	          
+	          String resultsubrt = HttpsUtils.doPost(ctrip_api_url, xmlinfo2.toString());
+	          if (resultsubrt.contains("Success")) {
+	            Db.update("update sys_hotels_rtfq set status=2 where id=" + record.getInt("id"));
+	          }
+	          log.info("废弃售卖房型结果：" + resultsubrt);
+	        }
+	      }
+	    }
+	    catch (Exception e)
+	    {
+	      e.printStackTrace();
+	    }
+	  }
+	  
+	 /**
+	 * 废弃酒店,通过数据库导入，配合URL地址调用的方式去实现
+	 */
+	  public void deactivatedHotel()
+	  {
+	    try
+	    {
+	      String ctrip_api_url = Config.getStr("ctrip_api_url");
+	      List<Record> fqRecordList = Db.find("select * from sys_hotels_hfq where status = 0");
+	      for (Record record : fqRecordList)
+	      {
+	        String codigo_hotel = record.getStr("hid");
+	        Record hotelInfoRecord = Db.findById("sys_hotels_info", "codigo_hotel", new Object[] { codigo_hotel });
+	        if (hotelInfoRecord != null)
+	        {
+	          StringBuilder xmlinfo = new StringBuilder();
+	          xmlinfo.append("<soap:Envelope xmlns:soap=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\">");
+	          xmlinfo.append("<soap:Body>");
+	          xmlinfo.append("<OTA_HotelDescriptiveContentNotifRQ Target=\"Production\" PrimaryLangID=\"en-us\" Version=\"1.0\" TimeStamp=\"" + DateUtils.getNowByGMT8() + "\" xmlns=\"http://www.opentravel.org/OTA/2003/05\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">");
+	          xmlinfo.append("  <POS>");
+	          xmlinfo.append("    <Source>");
+	          xmlinfo.append("    \t<RequestorID ID=\"hangye\" MessagePassword=\"hangye_101019\" Type=\"1\">");
+	          xmlinfo.append("    \t\t<CompanyName Code=\"C\" CodeContext=\"978\" />");
+	          xmlinfo.append("    \t</RequestorID>");
+	          xmlinfo.append("    </Source>");
+	          xmlinfo.append("  </POS>");
+	          xmlinfo.append("  <HotelDescriptiveContents  HotelCode=\"" + codigo_hotel + "\">");
+	          xmlinfo.append("    <HotelDescriptiveContent>");
+	          xmlinfo.append("      <HotelInfo HotelStatus=\"Deactivated\">");
+	          xmlinfo.append("        <Descriptions>");
+	          xmlinfo.append("          <MultimediaDescriptions>");
+	          xmlinfo.append("            <MultimediaDescription>");
+	          xmlinfo.append("              <TextItems>");
+	          xmlinfo.append("                <TextItem Language=\"en-us\" Title=\"" + hotelInfoRecord.getStr("nombre_h") + "\">");
+	          xmlinfo.append("                \t<Description>" + hotelInfoRecord.getStr("desc_hotel") + "</Description>");
+	          xmlinfo.append("                </TextItem>");
+	          xmlinfo.append("              </TextItems>");
+	          xmlinfo.append("            </MultimediaDescription>");
+	          xmlinfo.append("           </MultimediaDescriptions>");
+	          xmlinfo.append("         </Descriptions>");
+	          xmlinfo.append("         <Position Longitude=\"" + hotelInfoRecord.getStr("longitude") + "\" Latitude=\"" + hotelInfoRecord.getStr("latitude") + "\"/>");
+	          xmlinfo.append("      </HotelInfo>");
+	          xmlinfo.append("      <ContactInfos>");
+	          xmlinfo.append("        <ContactInfo>");
+	          xmlinfo.append("          <Addresses>");
+	          xmlinfo.append("            <Address Language=\"en-us\">");
+	          xmlinfo.append("            \t<AddressLine>" + hotelInfoRecord.getStr("direccion") + "</AddressLine>");
+	          xmlinfo.append("            </Address>");
+	          xmlinfo.append("          </Addresses>");
+	          xmlinfo.append("          <Phones>");
+	          xmlinfo.append("            <Phone PhoneNumber=\"" + hotelInfoRecord.getStr("telefono") + "\" PhoneTechType=\"Voice\"/>");
+	          xmlinfo.append("          </Phones>");
+	          xmlinfo.append("        </ContactInfo>");
+	          xmlinfo.append("      </ContactInfos>");
+	          xmlinfo.append("    </HotelDescriptiveContent>");
+	          xmlinfo.append("  </HotelDescriptiveContents>");
+	          xmlinfo.append("</OTA_HotelDescriptiveContentNotifRQ>");
+	          xmlinfo.append("</soap:Body>");
+	          xmlinfo.append("</soap:Envelope>");
+	          log.info("酒店" + codigo_hotel + "废弃酒店请求报文：" + xmlinfo.toString());
+	          String result = HttpsUtils.doPost(ctrip_api_url, xmlinfo.toString());
+	          log.info("酒店" + codigo_hotel + "废弃酒店响应报文：" + result);
+	          if (result.contains("Success"))
+	          {
+	            log.info("废弃酒店" + codigo_hotel + "Success");
+	            Db.update("update sys_hotels_hfq set status = 1  where hid = '" + codigo_hotel + "'");
+	          }
+	        }
+	      }
+	    }
+	    catch (Exception e)
+	    {
+	      log.error("废弃酒店异常" + e.getMessage());
+	    }
+	  }
 	}
-	
-	public static void main(String[] args) 
-	{
-		String ctrip_api_url = Config.getStr("ctrip_api_url");
-		String codigo_hotel = "162307";
-		String rtcode = "02";
-		String rpcode = "OB";
-		String adults = "4";
-		String desc = "Double or Twin SUPERIOR";
-		StringBuilder xmlinfo = new StringBuilder();
-    	xmlinfo.append("<soap:Envelope xmlns:soap=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\">");
-    	xmlinfo.append("<soap:Body>");
-		xmlinfo.append("<OTA_HotelInvNotifRQ Target=\"Production\" PrimaryLangID=\"en-us\" Version=\"1.0\" TimeStamp=\""+DateUtils.getNowByGMT8()+"\" xmlns=\"http://www.opentravel.org/OTA/2003/05\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">");
-		xmlinfo.append("  <POS>");
-		xmlinfo.append("    <Source>");
-		xmlinfo.append("    	<RequestorID ID=\"hangye\" MessagePassword=\"hangye_101019\" Type=\"1\">");
-		xmlinfo.append("    		<CompanyName Code=\"C\" CodeContext=\"978\" />");
-		xmlinfo.append("    	</RequestorID>");
-		xmlinfo.append("    </Source>");
-		xmlinfo.append("  </POS>");
-		xmlinfo.append("  <SellableProducts HotelCode=\""+codigo_hotel+"\">");
-		xmlinfo.append("    <SellableProduct InvTypeCode=\""+rtcode+"\" InvStatusType=\"Deactivated\">");
-		xmlinfo.append("      <GuestRoom>");
-		xmlinfo.append("        <Occupancy AgeQualifyingCode=\"10\" MinOccupancy=\"1\" MaxOccupancy=\""+adults+"\"/>");	//成人
-		xmlinfo.append("        <Currency Code=\"CNY\"/>");
-		xmlinfo.append("        <Description>");
-		xmlinfo.append("          <Text Language=\"en-us\">"+desc+"</Text>");
-		xmlinfo.append("        </Description>");
-		xmlinfo.append("      </GuestRoom>");
-		xmlinfo.append("    </SellableProduct>");
-		xmlinfo.append("  </SellableProducts>");
-		xmlinfo.append("</OTA_HotelInvNotifRQ>");
-		xmlinfo.append("</soap:Body>");
-		xmlinfo.append("</soap:Envelope>");
-		
-//		String resultrt =  HttpsUtils.doPost(ctrip_api_url, xmlinfo.toString());
-//		log.info("废弃结果："+resultrt);
-
-		
-		StringBuilder xmlinfo2 = new StringBuilder();
-    	xmlinfo2.append("<soap:Envelope xmlns:soap=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\">");
-    	xmlinfo2.append("<soap:Body>");
-    	xmlinfo2.append("<OTA_HotelRatePlanNotifRQ Target=\"Production\" PrimaryLangID=\"en-us\" Version=\"1.0\" TimeStamp=\""+DateUtils.getNowByGMT8()+"\" xmlns=\"http://www.opentravel.org/OTA/2003/05\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">");
-		xmlinfo2.append("  <POS>");
-		xmlinfo2.append("    <Source>");
-		xmlinfo2.append("    	<RequestorID ID=\"hangye\" MessagePassword=\"hangye_101019\" Type=\"1\">");
-		xmlinfo2.append("    		<CompanyName Code=\"C\" CodeContext=\"978\" />");
-		xmlinfo2.append("    	</RequestorID>");
-		xmlinfo2.append("    </Source>");
-		xmlinfo2.append("  </POS>");
-		xmlinfo2.append("  <RatePlans HotelCode=\""+codigo_hotel+"\">");
-		xmlinfo2.append("    <RatePlan RatePlanCode=\""+rpcode+"\" RatePlanCategory=\"501\" RatePlanStatusType=\"Deactivated\">");
-		xmlinfo2.append("    	<BookingRules>");
-		xmlinfo2.append("    		<BookingRule MaxTotalOccupancy=\""+adults+"\" />");
-		xmlinfo2.append("    	</BookingRules>");
-		xmlinfo2.append("    	<SellableProducts>");
-		xmlinfo2.append("    		<SellableProduct InvTypeCode=\""+rtcode+"\" />");
-		xmlinfo2.append("    	</SellableProducts>");
-		xmlinfo2.append("    </RatePlan>");
-		xmlinfo2.append("  </RatePlans>");
-		xmlinfo2.append("</OTA_HotelRatePlanNotifRQ>");
-		xmlinfo2.append("</soap:Body>");
-		xmlinfo2.append("</soap:Envelope>");
-		
-		String resultsubrt =  HttpsUtils.doPost(ctrip_api_url, xmlinfo2.toString());
-		log.info("废弃结果2："+resultsubrt);
-//		
-		String hotelStatus = HttpUtils.PushCtripXmlSearch(codigo_hotel);
-		log.info("ctripHotelStatusGet携程状态请求报文："+hotelStatus);
-		String resultStatus = HttpsUtils.doPost(ctrip_api_url, hotelStatus);
-		System.out.println(resultStatus);
-	}
-}
