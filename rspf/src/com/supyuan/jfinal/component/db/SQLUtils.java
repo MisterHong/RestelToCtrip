@@ -16,6 +16,9 @@
  */
 package com.supyuan.jfinal.component.db;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import com.supyuan.util.StrUtils;
 
 /**
@@ -44,7 +47,19 @@ public class SQLUtils {
 
 	public void whereLike(String attrName, String value) {
 		if (StrUtils.isNotEmpty(value)) {
+			Pattern p = Pattern.compile("[`~!@#$%^&*()+=|{}':;,\\[\\]》·.<>/?~！@#￥%……（）——+|{}【】‘；：”“’。，、？]");//去除特殊字符
+			Matcher m = p.matcher(value);
+			value = m.replaceAll("").trim().replace(" ", "").replace("\\", "");//将匹配的特殊字符转变为空
 			sqlBuffer.append(" AND " + getAttrName(attrName) + " LIKE '%").append(value).append("%'");
+		}
+	}
+	
+	public void whereLikeOrEqual(String attrName, String value) {
+		if (StrUtils.isNotEmpty(value)) {
+			Pattern p = Pattern.compile("[`~!@#$%^&*()+=|{}':;,\\[\\]》·.<>/?~！@#￥%……（）——+|{}【】‘；：”“’。，、？]");//去除特殊字符
+			Matcher m = p.matcher(value);
+			value = m.replaceAll("").trim().replace(" ", "").replace("\\", "");//将匹配的特殊字符转变为空
+			sqlBuffer.append(" AND (" + getAttrName(attrName) + " LIKE '%").append(value).append("%' or s1.codigo_hotel='"+ value +"')");
 		}
 	}
 
