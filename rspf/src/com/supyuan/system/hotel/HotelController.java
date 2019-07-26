@@ -52,7 +52,7 @@ public class HotelController extends BaseProjectController {
 			} catch (UnsupportedEncodingException e) {
 				log.error(e.getMessage());
 			}
-			sql.whereLike("nombre_h", search);
+			sql.whereLikeOrEqual("nombre_h", search.trim());
 		}
 		if(StrUtils.isNotEmpty(ctryCode) && !("-1").equals(ctryCode))
 		{
@@ -384,9 +384,8 @@ public class HotelController extends BaseProjectController {
 		String remark = getPara("remark");
 		try {
 			remark = URLDecoder.decode(remark, "UTF-8");
-			log.info("备注："+remark);
 		} catch (UnsupportedEncodingException e) {
-			log.info("备注异常："+remark+"\t"+e.getMessage());
+			log.info("更新备注异常："+remark+"\t"+e.getMessage());
 		} 
 		String sql = "update sys_hotels_info set remark='"+remark+"' where codigo_hotel = '"+codigo_hotel+"'";
 		Db.update(sql);
@@ -427,7 +426,7 @@ public class HotelController extends BaseProjectController {
 	 {
 	    try
 	    {
-	      String ctrip_api_url = Config.getStr("ctrip_api_url");
+    	  String ctrip_api_url = Config.getStr("ctrip_api_url");
 	      List<Record> fqRecordList = Db.find("select * from sys_hotels_rtfq where status = 0");
 	      for (Record record : fqRecordList)
 	      {

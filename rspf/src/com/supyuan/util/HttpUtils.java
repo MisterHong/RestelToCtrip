@@ -358,26 +358,26 @@ public class HttpUtils {
         				         start = format.format(startDate);
         				         end = format.format(DateUtils.StrToDate(end));
         				         int mealCount = 2;
-    				            boolean isBF = false;
-    				            boolean isLun = false;
-    				            boolean isBD = false;
-    				            if ((!rpcode.equals("RO")) && (!rpcode.equals("OB"))) {
-    				              rpcode.equals("SA");
-    				            }
-    				            if ((rpcode.equals("FB")) || (rpcode.equals("PC")) || (rpcode.equals("AI")) || (rpcode.equals("TI")))
-    				            {
-    				              isBD = true;
-    				              isBF = true;
-    				              isLun = true;
-    				            }
-    				            if ((rpcode.equals("BB")) || (rpcode.equals("AD"))) {
-    				              isBF = true;
-    				            }
-    				            if ((rpcode.equals("HB")) || (rpcode.equals("MP")))
-    				            {
-    				              isBF = true;
-    				              isBD = true;
-    				            }
+     				            boolean isBF = false;
+     				            boolean isLun = false;
+     				            boolean isBD = false;
+     				            if ((!rpcode.equals("RO")) && (!rpcode.equals("OB"))) {
+     				              rpcode.equals("SA");
+     				            }
+     				            if ((rpcode.equals("FB")) || (rpcode.equals("PC")) || (rpcode.equals("AI")) || (rpcode.equals("TI")))
+     				            {
+     				              isBD = true;
+     				              isBF = true;
+     				              isLun = true;
+     				            }
+     				            if ((rpcode.equals("BB")) || (rpcode.equals("AD"))) {
+     				              isBF = true;
+     				            }
+     				            if ((rpcode.equals("HB")) || (rpcode.equals("MP")))
+     				            {
+     				              isBF = true;
+     				              isBD = true;
+     				            }
 								 StringBuffer buffer = new StringBuffer();
 								 price = AmountUtil.multiply(price, usdrate, 2); //乘以汇率
 								 price = AmountUtil.add(price, tj, 2);	//加上抬价
@@ -471,26 +471,26 @@ public class HttpUtils {
         				         start = format.format(startDate);
         				         end = format.format(DateUtils.StrToDate(end));
         				         int mealCount = 2;
-    				            boolean isBF = false;
-    				            boolean isLun = false;
-    				            boolean isBD = false;
-    				            if ((!rpcode.equals("RO")) && (!rpcode.equals("OB"))) {
-    				              rpcode.equals("SA");
-    				            }
-    				            if ((rpcode.equals("FB")) || (rpcode.equals("PC")) || (rpcode.equals("AI")) || (rpcode.equals("TI")))
-    				            {
-    				              isBD = true;
-    				              isBF = true;
-    				              isLun = true;
-    				            }
-    				            if ((rpcode.equals("BB")) || (rpcode.equals("AD"))) {
-    				              isBF = true;
-    				            }
-    				            if ((rpcode.equals("HB")) || (rpcode.equals("MP")))
-    				            {
-    				              isBF = true;
-    				              isBD = true;
-    				            }
+    				             boolean isBF = false;
+    				             boolean isLun = false;
+    				             boolean isBD = false;
+    				             if ((!rpcode.equals("RO")) && (!rpcode.equals("OB"))) {
+    				               rpcode.equals("SA");
+    				             }
+    				             if ((rpcode.equals("FB")) || (rpcode.equals("PC")) || (rpcode.equals("AI")) || (rpcode.equals("TI")))
+    				             {
+    				               isBD = true;
+    				               isBF = true;
+    				               isLun = true;
+    				             }
+    				             if ((rpcode.equals("BB")) || (rpcode.equals("AD"))) {
+    				               isBF = true;
+    				             }
+    				             if ((rpcode.equals("HB")) || (rpcode.equals("MP")))
+    				             {
+    				               isBF = true;
+    				               isBD = true;
+    				             }
 								 StringBuffer buffer = new StringBuffer();
 								 price = AmountUtil.multiply(price, usdrate, 2); //乘以汇率
 								 price = AmountUtil.add(price, tj, 2);	//加上抬价
@@ -512,11 +512,10 @@ public class HttpUtils {
 							        SimpleDateFormat fs = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 							        String dateStr = fs.format(now);
 							        Record hotelRate = Db.findFirst("select id from sys_hotels_roomrate where hotelcode = '"+hotelcode+"' and rtcode = '"+rtcode+"' and rpcode = '"+rpcode+"' and timestamp = "+startDate.getTime());
-									String sql = "";
+							        String sql = "";
 							        if(null != hotelRate)
 							        {
-							        	sql = "update sys_hotels_roomrate set price="+price+",rprice="+prr+",rate="+usdrate+",tj="+tj+",altertime='"+dateStr+"' where hotelcode='"+hotelcode+"' and rtcode='"+rtcode+"' and rpcode='"+rpcode+"' and timestamp="+startDate.getTime();
-							        	log.info("推送酒店"+hotelcode+"---更新房价:"+sql);
+							        	sql = "update sys_hotels_roomrate set price="+price+",rprice="+prr+",rate="+usdrate+",tj="+tj+",altertime='"+dateStr+"' where hotelcode='"+hotelcode+"' and rtcode='"+rtcode+"' and rpcode='"+rpcode+"' and timestamp="+startDate.getTime();							        	log.info("推送酒店"+hotelcode+"---更新房价:"+sql);
 							        }
 							        else
 							        {
@@ -911,237 +910,210 @@ public class HttpUtils {
         		 List<Reg> regList = new ArrayList<Reg>();
         		 for (Element element2 : reglist) 
         		 {
-        			 //判断是否存在
-        			 boolean isOn = false;
-        			 for (RomeStay rs : romeStayList)
-        			 {
-        				if(rs.getRtCode().equals(element.attribute("cod").getText()))
-        				{
-        					for (Reg rg : rs.getRegList()) {
-								if(rg.getRpCode().equals(element2.attribute("cod").getText()))
-								{
-									isOn = true;
-								}
-							}
-        				} 
-					 }
-        			 
         			 if(element2.attribute("cod").getText().equals(rpcode))
         			 {
-        				 if(!isOn)
+    					 Reg reg = new Reg();
+    					 int meal = 2;
+    		             String RPcode = element2.attribute("cod").getText();
+    		             reg.setRpCode(RPcode);
+    		             if ((!RPcode.equals("RO")) && (!RPcode.equals("OB"))) {
+    		                RPcode.equals("SA");
+    		             }
+    		             if ((RPcode.equals("FB")) || (RPcode.equals("PC")) || (RPcode.equals("AI")) || (RPcode.equals("TI")))
+    		             {
+    		               reg.setBF(true);
+    		               reg.setLUN(true);
+    		               reg.setBD(true);
+    		             }
+    		             if ((RPcode.equals("BB")) || (RPcode.equals("AD"))) {
+    		               reg.setBF(true);
+    		             }
+    		             if ((RPcode.equals("HB")) || (RPcode.equals("MP")))
+    		             {
+    		               reg.setBF(true);
+    		               reg.setBD(true);
+    		             }
+    		             reg.setNumberOfMeal(meal+"");
+        				 List<Element> linlist = element2.elements("lin");
+        				 List<Lin> Lins = new ArrayList<Lin>();
+        				 String cancelPenalty  = "";
+        				 double tempPrice = 0.0d;
+        				 for (Element element3 : linlist) 
         				 {
-        					 Reg reg = new Reg();
-	    					 int meal = 2;
-	    		             String RPcode = element2.attribute("cod").getText();
-	    		             reg.setRpCode(RPcode);
-	    		             if ((!RPcode.equals("RO")) && (!RPcode.equals("OB"))) {
-	    		                RPcode.equals("SA");
-	    		             }
-	    		             if ((RPcode.equals("FB")) || (RPcode.equals("PC")) || (RPcode.equals("AI")) || (RPcode.equals("TI")))
-	    		             {
-	    		               reg.setBF(true);
-	    		               reg.setLUN(true);
-	    		               reg.setBD(true);
-	    		             }
-	    		             if ((RPcode.equals("BB")) || (RPcode.equals("AD"))) {
-	    		               reg.setBF(true);
-	    		             }
-	    		             if ((RPcode.equals("HB")) || (RPcode.equals("MP")))
-	    		             {
-	    		               reg.setBF(true);
-	    		               reg.setBD(true);
-	    		             }
-	    		             reg.setNumberOfMeal(meal+"");
-            				 List<Element> linlist = element2.elements("lin");
-            				 List<Lin> Lins = new ArrayList<Lin>();
-            				 String cancelPenalty  = "";
-            				 double tempPrice = 0.0d;
-            				 for (Element element3 : linlist) 
-            				 {
-            					 Lin lin = new Lin();
-            					 String linText = element3.getTextTrim();
-            					 if(null == cancelPenalty || "".equals(cancelPenalty))
-            					 {
-            						 String xmlInfo144 = HttpUtils.GetRestelXml144(hotelCode,linText);
-        	     					 String result144 = HttpUtils.HttpClientPost(xmlInfo144);
-        							 InputStream stream144 = new ByteArrayInputStream(result144.getBytes());
-        	    					 cancelPenalty = HttpUtils.Parse144Xml(stream144);
-        	    					 if(null == cancelPenalty || "".equals(cancelPenalty))
-        	    					 {
-        	    						 cancelPenalty = "The rate is non-refundable";
-        	    					 }
-            					 }
-    	    					 reg.setCancelPenalty(cancelPenalty);
-    	    					//根据取消政策，拼接Deadline,默认为不可取消
-    	    					 String Deadline = "<Deadline OffsetTimeUnit=\"Hour\" OffsetUnitMultiplier=\"24\" OffsetDropTime=\"BeforeArrival\" />";
-	    				         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");// 自定义时间格式
-	    				         Date date_a = simpleDateFormat.parse(start);//字符串转Date
-    	    					 if(cancelPenalty.contains("less than 1 day(s)"))
+        					 Lin lin = new Lin();
+        					 String linText = element3.getTextTrim();
+        					 if(null == cancelPenalty || "".equals(cancelPenalty))
+        					 {
+        						 String xmlInfo144 = HttpUtils.GetRestelXml144(hotelCode,linText);
+    	     					 log.info("取消政策供应商请求报文："+xmlInfo144);
+        						 String result144 = HttpUtils.HttpClientPost(xmlInfo144);
+    							 log.info("取消政策供应商相应报文："+result144);
+        						 InputStream stream144 = new ByteArrayInputStream(result144.getBytes());
+    	    					 cancelPenalty = HttpUtils.Parse144Xml(stream144);
+    	    					 log.info("解析后酒店的取消政策是："+cancelPenalty);
+    	    					 if(null == cancelPenalty || "".equals(cancelPenalty))
     	    					 {
-    	    						 Calendar ca = Calendar.getInstance();
-    	    				 		 ca.setTime(date_a);
-    	    				 		 ca.add(ca.DATE,-2);
-        	    					 date_a = ca.getTime();
-        	    					 System.out.println("-2"+ca.getTime());
-        	    					 SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
-        	    					 String time = sdf.format(date_a);
-        	    					 Deadline = "<Deadline AbsoluteDeadline=\""+time+"\" />";
+    	    						 cancelPenalty = "The rate is non-refundable";
+    	    						 log.info("无效值，选择默认的取消政策："+cancelPenalty);
     	    					 }
-    	    					 if(cancelPenalty.contains("less than 2 day(s)"))
-    	    					 {
-    	    						 Calendar ca = Calendar.getInstance();
-    	    				 		 ca.setTime(date_a);
-    	    				 		 ca.add(ca.DATE,-4);
-        	    					 date_a = ca.getTime();
-        	    					 System.out.println("-4"+ca.getTime());
-        	    					 SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
-        	    					 String time = sdf.format(date_a);
-        	    					 Deadline = "<Deadline AbsoluteDeadline=\""+time+"\" />";
-    	    					 }
-    	    					 if(cancelPenalty.contains("after 0:00 hours"))
-    	    					 {
-    	    						 Calendar ca = Calendar.getInstance();
-    	    				 		 ca.setTime(date_a);
-    	    				 		 ca.add(ca.DATE,-1);
-        	    					 date_a = ca.getTime();
-        	    					 System.out.println("-1"+ca.getTime());
-        	    					 SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
-        	    					 String time = sdf.format(date_a);
-        	    					 Deadline = "<Deadline AbsoluteDeadline=\""+time+"\" />";
-    	    					 }
-    	    					 reg.setDeadline(Deadline);
-    	    					 lin.setLinText(linText);
-    	    					 tempPrice = AmountUtil.multiply(Double.parseDouble(linText.split("#")[3]), usdrate, 2);
-    	    					 tempPrice = AmountUtil.add(tempPrice, tj, 2);
-    	    					 lin.setPrr(tempPrice+"");
-    	    					 String st = linText.split("#")[7];
-    	    					 String ed = linText.split("#")[8];
-    	    					 lin.setStart(st.substring(0, 4)+"-"+st.substring(4,6)+"-"+st.substring(6));
-    	    					 lin.setEnd(ed.substring(0, 4)+"-"+ed.substring(4,6)+"-"+ed.substring(6,8));
-    	    					 Lins.add(lin);
-            				 }
-            				 double totalPrice = AmountUtil.multiply(tempPrice, linlist.size() * 1.0, 2);
-            				 reg.setTotal(totalPrice+"");
-            				 linlist.size();
-            				 reg.setLinList(Lins);
-            				 regList.add(reg);
+        					 }
+	    					 reg.setCancelPenalty(cancelPenalty);
+	    					//根据取消政策，拼接Deadline,默认为不可取消
+	    					 String Deadline = "<Deadline OffsetTimeUnit=\"Hour\" OffsetUnitMultiplier=\"24\" OffsetDropTime=\"BeforeArrival\" />";
+    				         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");// 自定义时间格式
+    				         Date date_a = simpleDateFormat.parse(start);//字符串转Date
+	    					 if(cancelPenalty.contains("less than 1 day(s)"))
+	    					 {
+	    						 Calendar ca = Calendar.getInstance();
+	    				 		 ca.setTime(date_a);
+	    				 		 ca.add(ca.DATE,-2);
+    	    					 date_a = ca.getTime();
+    	    					 System.out.println("-2"+ca.getTime());
+    	    					 SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+    	    					 String time = sdf.format(date_a);
+    	    					 Deadline = "<Deadline AbsoluteDeadline=\""+time+"\" />";
+	    					 }
+	    					 if(cancelPenalty.contains("less than 2 day(s)"))
+	    					 {
+	    						 Calendar ca = Calendar.getInstance();
+	    				 		 ca.setTime(date_a);
+	    				 		 ca.add(ca.DATE,-4);
+    	    					 date_a = ca.getTime();
+    	    					 System.out.println("-4"+ca.getTime());
+    	    					 SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+    	    					 String time = sdf.format(date_a);
+    	    					 Deadline = "<Deadline AbsoluteDeadline=\""+time+"\" />";
+	    					 }
+	    					 if(cancelPenalty.contains("after 0:00 hours"))
+	    					 {
+	    						 Calendar ca = Calendar.getInstance();
+	    				 		 ca.setTime(date_a);
+	    				 		 ca.add(ca.DATE,-1);
+    	    					 date_a = ca.getTime();
+    	    					 System.out.println("-1"+ca.getTime());
+    	    					 SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+    	    					 String time = sdf.format(date_a);
+    	    					 Deadline = "<Deadline AbsoluteDeadline=\""+time+"\" />";
+	    					 }
+	    					 log.info("推送给携程的取消政策Deadline内容："+Deadline);
+	    					 reg.setDeadline(Deadline);
+	    					 lin.setLinText(linText);
+	    					 tempPrice = AmountUtil.multiply(Double.parseDouble(linText.split("#")[3]), usdrate, 2);
+	    					 tempPrice = AmountUtil.add(tempPrice, tj, 2);
+	    					 lin.setPrr(tempPrice+"");
+	    					 String st = linText.split("#")[7];
+	    					 String ed = linText.split("#")[8];
+	    					 lin.setStart(st.substring(0, 4)+"-"+st.substring(4,6)+"-"+st.substring(6));
+	    					 lin.setEnd(ed.substring(0, 4)+"-"+ed.substring(4,6)+"-"+ed.substring(6,8));
+	    					 Lins.add(lin);
         				 }
-        				
+        				 double totalPrice = AmountUtil.multiply(tempPrice, linlist.size() * 1.0, 2);
+        				 reg.setTotal(totalPrice+"");
+        				 linlist.size();
+        				 reg.setLinList(Lins);
+        				 regList.add(reg);
         			 }
         			 else if("".equals(rpcode))
         			 {
-        				 if(!isOn)
+    					 Reg reg = new Reg();
+    					 int meal = 2;
+    		             String RPcode = element2.attribute("cod").getText();
+    		             reg.setRpCode(RPcode);
+    		             if ((!RPcode.equals("RO")) && (!RPcode.equals("OB"))) {
+    		                RPcode.equals("SA");
+    		             }
+    		             if ((RPcode.equals("FB")) || (RPcode.equals("PC")) || (RPcode.equals("AI")) || (RPcode.equals("TI")))
+    		             {
+    		               reg.setBF(true);
+    		               reg.setLUN(true);
+    		               reg.setBD(true);
+    		             }
+    		             if ((RPcode.equals("BB")) || (RPcode.equals("AD"))) {
+    		               reg.setBF(true);
+    		             }
+    		             if ((RPcode.equals("HB")) || (RPcode.equals("MP")))
+    		             {
+    		               reg.setBF(true);
+    		               reg.setBD(true);
+    		             }
+        				 reg.setNumberOfMeal(meal+"");
+        				 List<Element> linlist = element2.elements("lin");
+        				 List<Lin> Lins = new ArrayList<Lin>();
+        				 String cancelPenalty  = "";
+        				 double tempPrice = 0.0d;
+        				 for (Element element3 : linlist) 
         				 {
-        					 Reg reg = new Reg();
-            				 int meal = 0;
-            				 String RPcode = element2.attribute("cod").getText();
-            				 reg.setRpCode(RPcode);
-            				 if(RPcode.equals("RO")||RPcode.equals("OB")||RPcode.equals("SA"))
-            				 {
-            					 reg.setBD(true);
-            				 }
-            				 if(RPcode.equals("FB")||RPcode.equals("PC")||RPcode.equals("AI")||RPcode.equals("TI"))
-            				 {
-            					 reg.setBD(true);
-            					 reg.setBF(true);
-            					 reg.setLUN(true);
-            				 }
-            				 if(RPcode.equals("BB")||RPcode.equals("AD"))
-    						 {
-            					 reg.setBF(true);
-            					 reg.setBD(true);
-    						 }
-            				 if(RPcode.equals("HB")||RPcode.equals("MP"))
-    						 {
-            					 reg.setBF(true);
-            					 reg.setLUN(true);
-    						 }
-            				 if(reg.isBF())
-            				 {
-            					 meal++;
-            				 }
-            				 if(reg.isBD())
-            				 {
-            					 meal++;
-            				 }
-            				 if(reg.isLUN())
-            				 {
-            					 meal++;
-            				 }
-            				 reg.setNumberOfMeal(meal+"");
-            				 List<Element> linlist = element2.elements("lin");
-            				 List<Lin> Lins = new ArrayList<Lin>();
-            				 String cancelPenalty  = "";
-            				 double tempPrice = 0.0d;
-            				 for (Element element3 : linlist) 
-            				 {
-            					 Lin lin = new Lin();
-            					 String linText = element3.getTextTrim();
-            					 if(null == cancelPenalty || "".equals(cancelPenalty))
-            					 {
-            						 String xmlInfo144 = HttpUtils.GetRestelXml144(hotelCode,linText);
-        	     					 String result144 = HttpUtils.HttpClientPost(xmlInfo144);
-        							 InputStream stream144 = new ByteArrayInputStream(result144.getBytes());
-        	    					 cancelPenalty = HttpUtils.Parse144Xml(stream144);
-        	    					 if(null == cancelPenalty || "".equals(cancelPenalty))
-        	    					 {
-        	    						 cancelPenalty = "The rate is non-refundable";
-        	    					 }
-            					 }
-    	    					 reg.setCancelPenalty(cancelPenalty);
-    	    					//根据取消政策，拼接Deadline,默认为不可取消
-    	    					 String Deadline = "<Deadline OffsetTimeUnit=\"Hour\" OffsetUnitMultiplier=\"24\" OffsetDropTime=\"BeforeArrival\" />";
-	    				         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");// 自定义时间格式
-	    				         Date date_a = simpleDateFormat.parse(start);//字符串转Date
-    	    					 if(cancelPenalty.contains("less than 1 day(s)"))
+        					 Lin lin = new Lin();
+        					 String linText = element3.getTextTrim();
+        					 if(null == cancelPenalty || "".equals(cancelPenalty))
+        					 {
+        						 String xmlInfo144 = HttpUtils.GetRestelXml144(hotelCode,linText);
+        						 log.info("取消政策供应商请求报文："+xmlInfo144);
+    	     					 String result144 = HttpUtils.HttpClientPost(xmlInfo144);
+    							 log.info("取消政策供应商相应报文："+result144);
+    							 InputStream stream144 = new ByteArrayInputStream(result144.getBytes());
+    	    					 cancelPenalty = HttpUtils.Parse144Xml(stream144);
+    	    					 log.info("解析后酒店的取消政策是："+cancelPenalty);
+    	    					 if(null == cancelPenalty || "".equals(cancelPenalty))
     	    					 {
-    	    						 Calendar ca = Calendar.getInstance();
-    	    				 		 ca.setTime(date_a);
-    	    				 		 ca.add(ca.DATE,-2);
-        	    					 date_a = ca.getTime();
-        	    					 System.out.println("-2"+ca.getTime());
-        	    					 SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
-        	    					 String time = sdf.format(date_a);
-        	    					 Deadline = "<Deadline AbsoluteDeadline=\""+time+"\" />";
+    	    						 cancelPenalty = "The rate is non-refundable";
+    	    						 log.info("无效值，选择默认的取消政策："+cancelPenalty);
     	    					 }
-    	    					 if(cancelPenalty.contains("less than 2 day(s)"))
-    	    					 {
-    	    						 Calendar ca = Calendar.getInstance();
-    	    				 		 ca.setTime(date_a);
-    	    				 		 ca.add(ca.DATE,-4);
-        	    					 date_a = ca.getTime();
-        	    					 System.out.println("-4"+ca.getTime());
-        	    					 SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
-        	    					 String time = sdf.format(date_a);
-        	    					 Deadline = "<Deadline AbsoluteDeadline=\""+time+"\" />";
-    	    					 }
-    	    					 if(cancelPenalty.contains("after 0:00 hours"))
-    	    					 {
-    	    						 Calendar ca = Calendar.getInstance();
-    	    				 		 ca.setTime(date_a);
-    	    				 		 ca.add(ca.DATE,-1);
-        	    					 date_a = ca.getTime();
-        	    					 System.out.println("-1"+ca.getTime());
-        	    					 SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
-        	    					 String time = sdf.format(date_a);
-        	    					 Deadline = "<Deadline AbsoluteDeadline=\""+time+"\" />";
-    	    					 }
-    	    					 reg.setDeadline(Deadline);
-    	    					 lin.setLinText(linText);
-    	    					 tempPrice = AmountUtil.multiply(Double.parseDouble(linText.split("#")[3]), usdrate, 2);
-    	    					 tempPrice = AmountUtil.add(tempPrice, tj, 2);
-    	    					 lin.setPrr(tempPrice+"");
-    	    					 String st = linText.split("#")[7];
-    	    					 String ed = linText.split("#")[8];
-    	    					 lin.setStart(st.substring(0, 4)+"-"+st.substring(4,6)+"-"+st.substring(6));
-    	    					 lin.setEnd(ed.substring(0, 4)+"-"+ed.substring(4,6)+"-"+ed.substring(6,8));
-    	    					 Lins.add(lin);
-            				 }
-            				 double totalPrice = AmountUtil.multiply(tempPrice, linlist.size() * 1.0, 2);
-            				 reg.setTotal(totalPrice+"");
-            				 reg.setLinList(Lins);
-            				 regList.add(reg);
+        					 }
+	    					 reg.setCancelPenalty(cancelPenalty);
+	    					//根据取消政策，拼接Deadline,默认为不可取消
+	    					 String Deadline = "<Deadline OffsetTimeUnit=\"Hour\" OffsetUnitMultiplier=\"24\" OffsetDropTime=\"BeforeArrival\" />";
+    				         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");// 自定义时间格式
+    				         Date date_a = simpleDateFormat.parse(start);//字符串转Date
+	    					 if(cancelPenalty.contains("less than 1 day(s)"))
+	    					 {
+	    						 Calendar ca = Calendar.getInstance();
+	    				 		 ca.setTime(date_a);
+	    				 		 ca.add(ca.DATE,-2);
+    	    					 date_a = ca.getTime();
+    	    					 System.out.println("-2"+ca.getTime());
+    	    					 SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+    	    					 String time = sdf.format(date_a);
+    	    					 Deadline = "<Deadline AbsoluteDeadline=\""+time+"\" />";
+	    					 }
+	    					 if(cancelPenalty.contains("less than 2 day(s)"))
+	    					 {
+	    						 Calendar ca = Calendar.getInstance();
+	    				 		 ca.setTime(date_a);
+	    				 		 ca.add(ca.DATE,-4);
+    	    					 date_a = ca.getTime();
+    	    					 System.out.println("-4"+ca.getTime());
+    	    					 SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+    	    					 String time = sdf.format(date_a);
+    	    					 Deadline = "<Deadline AbsoluteDeadline=\""+time+"\" />";
+	    					 }
+	    					 if(cancelPenalty.contains("after 0:00 hours"))
+	    					 {
+	    						 Calendar ca = Calendar.getInstance();
+	    				 		 ca.setTime(date_a);
+	    				 		 ca.add(ca.DATE,-1);
+    	    					 date_a = ca.getTime();
+    	    					 System.out.println("-1"+ca.getTime());
+    	    					 SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+    	    					 String time = sdf.format(date_a);
+    	    					 Deadline = "<Deadline AbsoluteDeadline=\""+time+"\" />";
+	    					 }
+	    					 log.info("推送给携程的取消政策Deadline内容："+Deadline);
+	    					 reg.setDeadline(Deadline);
+	    					 lin.setLinText(linText);
+	    					 tempPrice = AmountUtil.multiply(Double.parseDouble(linText.split("#")[3]), usdrate, 2);
+	    					 tempPrice = AmountUtil.add(tempPrice, tj, 2);
+	    					 lin.setPrr(tempPrice+"");
+	    					 String st = linText.split("#")[7];
+	    					 String ed = linText.split("#")[8];
+	    					 lin.setStart(st.substring(0, 4)+"-"+st.substring(4,6)+"-"+st.substring(6));
+	    					 lin.setEnd(ed.substring(0, 4)+"-"+ed.substring(4,6)+"-"+ed.substring(6,8));
+	    					 Lins.add(lin);
         				 }
+        				 double totalPrice = AmountUtil.multiply(tempPrice, linlist.size() * 1.0, 2);
+        				 reg.setTotal(totalPrice+"");
+        				 reg.setLinList(Lins);
+        				 regList.add(reg);
         			 }
     			}
         		romeStay.setRegList(regList);
@@ -1156,251 +1128,205 @@ public class HttpUtils {
         		 List<Reg> regList = new ArrayList<Reg>();
         		 for (Element element2 : reglist) 
         		 {
-        			 //判断是否存在
-        			 boolean isOn = false;
-        			 for (RomeStay rs : romeStayList)
-        			 {
-        				if(rs.getRtCode().equals(element.attribute("cod").getText()))
-        				{
-        					for (Reg rg : rs.getRegList()) {
-								if(rg.getRpCode().equals(element2.attribute("cod").getText()))
-								{
-									isOn = true;
-								}
-							}
-        				} 
-					 }
-        			 
         			 if(!("".equals(rpcode)) && element2.attribute("cod").getText().equals(rpcode))
         			 {
-        				 if(!isOn)
+    					 Reg reg = new Reg();
+    					 int meal = 2;
+    		             String RPcode = element2.attribute("cod").getText();
+    		             reg.setRpCode(RPcode);
+    		             if ((!RPcode.equals("RO")) && (!RPcode.equals("OB"))) {
+    		                RPcode.equals("SA");
+    		             }
+    		             if ((RPcode.equals("FB")) || (RPcode.equals("PC")) || (RPcode.equals("AI")) || (RPcode.equals("TI")))
+    		             {
+    		               reg.setBF(true);
+    		               reg.setLUN(true);
+    		               reg.setBD(true);
+    		             }
+    		             if ((RPcode.equals("BB")) || (RPcode.equals("AD"))) {
+    		               reg.setBF(true);
+    		             }
+    		             if ((RPcode.equals("HB")) || (RPcode.equals("MP")))
+    		             {
+    		               reg.setBF(true);
+    		               reg.setBD(true);
+    		             }
+        				 reg.setNumberOfMeal(meal+"");
+        				 List<Element> linlist = element2.elements("lin");
+        				 List<Lin> Lins = new ArrayList<Lin>();
+        				 String cancelPenalty  = "";
+        				 double tempPrice = 0.0d;
+        				 for (Element element3 : linlist) 
         				 {
-        					 Reg reg = new Reg();
-            				 int meal = 0;
-            				 String RPcode = element2.attribute("cod").getText();
-            				 reg.setRpCode(RPcode);
-            				 if(RPcode.equals("RO")||RPcode.equals("OB")||RPcode.equals("SA"))
-            				 {
-            					 reg.setBD(true);
-            				 }
-            				 if(RPcode.equals("FB")||RPcode.equals("PC")||RPcode.equals("AI")||RPcode.equals("TI"))
-            				 {
-            					 reg.setBD(true);
-            					 reg.setBF(true);
-            					 reg.setLUN(true);
-            				 }
-            				 if(RPcode.equals("BB")||RPcode.equals("AD"))
-    						 {
-            					 reg.setBF(true);
-            					 reg.setBD(true);
-    						 }
-            				 if(RPcode.equals("HB")||RPcode.equals("MP"))
-    						 {
-            					 reg.setBF(true);
-            					 reg.setLUN(true);
-    						 }
-            				 if(reg.isBF())
-            				 {
-            					 meal++;
-            				 }
-            				 if(reg.isBD())
-            				 {
-            					 meal++;
-            				 }
-            				 if(reg.isLUN())
-            				 {
-            					 meal++;
-            				 }
-            				 reg.setNumberOfMeal(meal+"");
-            				 List<Element> linlist = element2.elements("lin");
-            				 List<Lin> Lins = new ArrayList<Lin>();
-            				 String cancelPenalty  = "";
-            				 double tempPrice = 0.0d;
-            				 for (Element element3 : linlist) 
-            				 {
-            					 Lin lin = new Lin();
-            					 String linText = element3.getTextTrim();
-            					 if(null == cancelPenalty || "".equals(cancelPenalty))
-            					 {
-            						 String xmlInfo144 = HttpUtils.GetRestelXml144(hotelCode,linText);
-        	     					 String result144 = HttpUtils.HttpClientPost(xmlInfo144);
-        							 InputStream stream144 = new ByteArrayInputStream(result144.getBytes());
-        	    					 cancelPenalty = HttpUtils.Parse144Xml(stream144);
-        	    					 if(null == cancelPenalty || "".equals(cancelPenalty))
-        	    					 {
-        	    						 cancelPenalty = "The rate is non-refundable";
-        	    					 }
-            					 }
-    	    					 reg.setCancelPenalty(cancelPenalty);
-    	    					//根据取消政策，拼接Deadline,默认为不可取消
-    	    					 String Deadline = "<Deadline OffsetTimeUnit=\"Hour\" OffsetUnitMultiplier=\"24\" OffsetDropTime=\"BeforeArrival\" />";
-	    				         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");// 自定义时间格式
-	    				         Date date_a = simpleDateFormat.parse(start);//字符串转Date
-    	    					 if(cancelPenalty.contains("less than 1 day(s)"))
+        					 Lin lin = new Lin();
+        					 String linText = element3.getTextTrim();
+        					 if(null == cancelPenalty || "".equals(cancelPenalty))
+        					 {
+        						 String xmlInfo144 = HttpUtils.GetRestelXml144(hotelCode,linText);
+        						 log.info("取消政策供应商请求报文："+xmlInfo144);
+    	     					 String result144 = HttpUtils.HttpClientPost(xmlInfo144);
+    							 log.info("取消政策供应商相应报文："+result144);
+    							 InputStream stream144 = new ByteArrayInputStream(result144.getBytes());
+    	    					 cancelPenalty = HttpUtils.Parse144Xml(stream144);
+    	    					 log.info("解析后酒店的取消政策是："+cancelPenalty);
+    	    					 if(null == cancelPenalty || "".equals(cancelPenalty))
     	    					 {
-    	    						 Calendar ca = Calendar.getInstance();
-    	    				 		 ca.setTime(date_a);
-    	    				 		 ca.add(ca.DATE,-2);
-        	    					 date_a = ca.getTime();
-        	    					 System.out.println("-2"+ca.getTime());
-        	    					 SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
-        	    					 String time = sdf.format(date_a);
-        	    					 Deadline = "<Deadline AbsoluteDeadline=\""+time+"\" />";
+    	    						 cancelPenalty = "The rate is non-refundable";
+    	    						 log.info("无效值，选择默认的取消政策："+cancelPenalty);
     	    					 }
-    	    					 if(cancelPenalty.contains("less than 2 day(s)"))
-    	    					 {
-    	    						 Calendar ca = Calendar.getInstance();
-    	    				 		 ca.setTime(date_a);
-    	    				 		 ca.add(ca.DATE,-4);
-        	    					 date_a = ca.getTime();
-        	    					 System.out.println("-4"+ca.getTime());
-        	    					 SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
-        	    					 String time = sdf.format(date_a);
-        	    					 Deadline = "<Deadline AbsoluteDeadline=\""+time+"\" />";
-    	    					 }
-    	    					 if(cancelPenalty.contains("after 0:00 hours"))
-    	    					 {
-    	    						 Calendar ca = Calendar.getInstance();
-    	    				 		 ca.setTime(date_a);
-    	    				 		 ca.add(ca.DATE,-1);
-        	    					 date_a = ca.getTime();
-        	    					 System.out.println("-1"+ca.getTime());
-        	    					 SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
-        	    					 String time = sdf.format(date_a);
-        	    					 Deadline = "<Deadline AbsoluteDeadline=\""+time+"\" />";
-    	    					 }
-    	    					 reg.setDeadline(Deadline);
-    	    					 lin.setLinText(linText);
-    	    					 tempPrice = AmountUtil.multiply(Double.parseDouble(linText.split("#")[3]), usdrate, 2);
-    	    					 tempPrice = AmountUtil.add(tempPrice, tj, 2);
-    	    					 lin.setPrr(tempPrice+"");
-    	    					 System.err.println(linText+"\t"+tempPrice);
-    	    					 String st = linText.split("#")[7];
-    	    					 String ed = linText.split("#")[8];
-    	    					 lin.setStart(st.substring(0, 4)+"-"+st.substring(4,6)+"-"+st.substring(6));
-    	    					 lin.setEnd(ed.substring(0, 4)+"-"+ed.substring(4,6)+"-"+ed.substring(6,8));
-    	    					 Lins.add(lin);
-            				 }
-            				 double totalPrice = AmountUtil.multiply(tempPrice, linlist.size() * 1.0, 2);
-            				 reg.setTotal(totalPrice+"");
-            				 reg.setLinList(Lins);
-            				 regList.add(reg);
+        					 }
+	    					 reg.setCancelPenalty(cancelPenalty);
+	    					//根据取消政策，拼接Deadline,默认为不可取消
+	    					 String Deadline = "<Deadline OffsetTimeUnit=\"Hour\" OffsetUnitMultiplier=\"24\" OffsetDropTime=\"BeforeArrival\" />";
+    				         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");// 自定义时间格式
+    				         Date date_a = simpleDateFormat.parse(start);//字符串转Date
+	    					 if(cancelPenalty.contains("less than 1 day(s)"))
+	    					 {
+	    						 Calendar ca = Calendar.getInstance();
+	    				 		 ca.setTime(date_a);
+	    				 		 ca.add(ca.DATE,-2);
+    	    					 date_a = ca.getTime();
+    	    					 System.out.println("-2"+ca.getTime());
+    	    					 SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+    	    					 String time = sdf.format(date_a);
+    	    					 Deadline = "<Deadline AbsoluteDeadline=\""+time+"\" />";
+	    					 }
+	    					 if(cancelPenalty.contains("less than 2 day(s)"))
+	    					 {
+	    						 Calendar ca = Calendar.getInstance();
+	    				 		 ca.setTime(date_a);
+	    				 		 ca.add(ca.DATE,-4);
+    	    					 date_a = ca.getTime();
+    	    					 System.out.println("-4"+ca.getTime());
+    	    					 SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+    	    					 String time = sdf.format(date_a);
+    	    					 Deadline = "<Deadline AbsoluteDeadline=\""+time+"\" />";
+	    					 }
+	    					 if(cancelPenalty.contains("after 0:00 hours"))
+	    					 {
+	    						 Calendar ca = Calendar.getInstance();
+	    				 		 ca.setTime(date_a);
+	    				 		 ca.add(ca.DATE,-1);
+    	    					 date_a = ca.getTime();
+    	    					 SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+    	    					 String time = sdf.format(date_a);
+    	    					 Deadline = "<Deadline AbsoluteDeadline=\""+time+"\" />";
+	    					 }
+	    					 log.info("推送给携程的取消政策Deadline内容："+Deadline);
+	    					 reg.setDeadline(Deadline);
+	    					 lin.setLinText(linText);
+	    					 tempPrice = AmountUtil.multiply(Double.parseDouble(linText.split("#")[3]), usdrate, 2);
+	    					 tempPrice = AmountUtil.add(tempPrice, tj, 2);
+	    					 lin.setPrr(tempPrice+"");
+	    					 String st = linText.split("#")[7];
+	    					 String ed = linText.split("#")[8];
+	    					 lin.setStart(st.substring(0, 4)+"-"+st.substring(4,6)+"-"+st.substring(6));
+	    					 lin.setEnd(ed.substring(0, 4)+"-"+ed.substring(4,6)+"-"+ed.substring(6,8));
+	    					 Lins.add(lin);
         				 }
+        				 double totalPrice = AmountUtil.multiply(tempPrice, linlist.size() * 1.0, 2);
+        				 reg.setTotal(totalPrice+"");
+        				 reg.setLinList(Lins);
+        				 regList.add(reg);
         			 }
         			 else
         			 {
-        				 if(!isOn)
+    					 Reg reg = new Reg();
+    					 int meal = 2;
+    		             String RPcode = element2.attribute("cod").getText();
+    		             reg.setRpCode(RPcode);
+    		             if ((!RPcode.equals("RO")) && (!RPcode.equals("OB"))) {
+    		                RPcode.equals("SA");
+    		             }
+    		             if ((RPcode.equals("FB")) || (RPcode.equals("PC")) || (RPcode.equals("AI")) || (RPcode.equals("TI")))
+    		             {
+    		               reg.setBF(true);
+    		               reg.setLUN(true);
+    		               reg.setBD(true);
+    		             }
+    		             if ((RPcode.equals("BB")) || (RPcode.equals("AD"))) {
+    		               reg.setBF(true);
+    		             }
+    		             if ((RPcode.equals("HB")) || (RPcode.equals("MP")))
+    		             {
+    		               reg.setBF(true);
+    		               reg.setBD(true);
+    		             }
+        				 reg.setNumberOfMeal(meal+"");
+        				 List<Element> linlist = element2.elements("lin");
+        				 List<Lin> Lins = new ArrayList<Lin>();
+        				 String cancelPenalty  = "";
+        				 double tempPrice = 0.0d;
+        				 for (Element element3 : linlist) 
         				 {
-        					 Reg reg = new Reg();
-            				 int meal = 0;
-            				 String RPcode = element2.attribute("cod").getText();
-            				 reg.setRpCode(RPcode);
-            				 if(RPcode.equals("RO")||RPcode.equals("OB")||RPcode.equals("SA"))
-            				 {
-            					 reg.setBD(true);
-            				 }
-            				 if(RPcode.equals("FB")||RPcode.equals("PC")||RPcode.equals("AI")||RPcode.equals("TI"))
-            				 {
-            					 reg.setBD(true);
-            					 reg.setBF(true);
-            					 reg.setLUN(true);
-            				 }
-            				 if(RPcode.equals("BB")||RPcode.equals("AD"))
-    						 {
-            					 reg.setBF(true);
-            					 reg.setBD(true);
-    						 }
-            				 if(RPcode.equals("HB")||RPcode.equals("MP"))
-    						 {
-            					 reg.setBF(true);
-            					 reg.setLUN(true);
-    						 }
-            				 if(reg.isBF())
-            				 {
-            					 meal++;
-            				 }
-            				 if(reg.isBD())
-            				 {
-            					 meal++;
-            				 }
-            				 if(reg.isLUN())
-            				 {
-            					 meal++;
-            				 }
-            				 reg.setNumberOfMeal(meal+"");
-            				 List<Element> linlist = element2.elements("lin");
-            				 List<Lin> Lins = new ArrayList<Lin>();
-            				 String cancelPenalty  = "";
-            				 double tempPrice = 0.0d;
-            				 for (Element element3 : linlist) 
-            				 {
-            					 Lin lin = new Lin();
-            					 String linText = element3.getTextTrim();
-            					 if(null == cancelPenalty || "".equals(cancelPenalty))
-            					 {
-            						 String xmlInfo144 = HttpUtils.GetRestelXml144(hotelCode,linText);
-        	     					 String result144 = HttpUtils.HttpClientPost(xmlInfo144);
-        							 InputStream stream144 = new ByteArrayInputStream(result144.getBytes());
-        	    					 cancelPenalty = HttpUtils.Parse144Xml(stream144);
-        	    					 if(null == cancelPenalty || "".equals(cancelPenalty))
-        	    					 {
-        	    						 cancelPenalty = "The rate is non-refundable";
-        	    					 }
-            					 }
-    	    					 reg.setCancelPenalty(cancelPenalty);
-    	    					 //根据取消政策，拼接Deadline,默认为不可取消
-    	    					 String Deadline = "<Deadline OffsetTimeUnit=\"Hour\" OffsetUnitMultiplier=\"24\" OffsetDropTime=\"BeforeArrival\" />";
-	    				         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");// 自定义时间格式
-	    				         Date date_a = simpleDateFormat.parse(start);//字符串转Date
-    	    					 if(cancelPenalty.contains("less than 1 day(s)"))
+        					 Lin lin = new Lin();
+        					 String linText = element3.getTextTrim();
+        					 if(null == cancelPenalty || "".equals(cancelPenalty))
+        					 {
+        						 String xmlInfo144 = HttpUtils.GetRestelXml144(hotelCode,linText);
+        						 log.info("取消政策供应商请求报文："+xmlInfo144);
+    	     					 String result144 = HttpUtils.HttpClientPost(xmlInfo144);
+    							 log.info("取消政策供应商相应报文："+result144);
+    							 InputStream stream144 = new ByteArrayInputStream(result144.getBytes());
+    	    					 cancelPenalty = HttpUtils.Parse144Xml(stream144);
+    	    					 log.info("解析后酒店的取消政策是："+cancelPenalty);
+    	    					 if(null == cancelPenalty || "".equals(cancelPenalty))
     	    					 {
-    	    						 Calendar ca = Calendar.getInstance();
-    	    				 		 ca.setTime(date_a);
-    	    				 		 ca.add(ca.DATE,-2);
-        	    					 date_a = ca.getTime();
-        	    					 System.out.println("-2"+ca.getTime());
-        	    					 SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
-        	    					 String time = sdf.format(date_a);
-        	    					 Deadline = "<Deadline AbsoluteDeadline=\""+time+"\" />";
+    	    						 cancelPenalty = "The rate is non-refundable";
+    	    						 log.info("无效值，选择默认的取消政策："+cancelPenalty);
     	    					 }
-    	    					 if(cancelPenalty.contains("less than 2 day(s)"))
-    	    					 {
-    	    						 Calendar ca = Calendar.getInstance();
-    	    				 		 ca.setTime(date_a);
-    	    				 		 ca.add(ca.DATE,-4);
-        	    					 date_a = ca.getTime();
-        	    					 System.out.println("-4"+ca.getTime());
-        	    					 SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
-        	    					 String time = sdf.format(date_a);
-        	    					 Deadline = "<Deadline AbsoluteDeadline=\""+time+"\" />";
-    	    					 }
-    	    					 if(cancelPenalty.contains("after 0:00 hours"))
-    	    					 {
-    	    						 Calendar ca = Calendar.getInstance();
-    	    				 		 ca.setTime(date_a);
-    	    				 		 ca.add(ca.DATE,-1);
-        	    					 date_a = ca.getTime();
-        	    					 System.out.println("-1"+ca.getTime());
-        	    					 SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
-        	    					 String time = sdf.format(date_a);
-        	    					 Deadline = "<Deadline AbsoluteDeadline=\""+time+"\" />";
-    	    					 }
-    	    					 reg.setDeadline(Deadline);
-    	    					 lin.setLinText(linText);
-    	    					 tempPrice = AmountUtil.multiply(Double.parseDouble(linText.split("#")[3]), usdrate, 2);
-    	    					 tempPrice = AmountUtil.add(tempPrice, tj, 2);
-    	    					 lin.setPrr(tempPrice+"");
-    	    					 String st = linText.split("#")[7];
-    	    					 String ed = linText.split("#")[8];
-    	    					 lin.setStart(st.substring(0, 4)+"-"+st.substring(4,6)+"-"+st.substring(6));
-    	    					 lin.setEnd(ed.substring(0, 4)+"-"+ed.substring(4,6)+"-"+ed.substring(6,8));
-    	    					 Lins.add(lin);
-            				 }
-            				 double totalPrice = AmountUtil.multiply(tempPrice, linlist.size() * 1.0, 2);
-            				 reg.setTotal(totalPrice+"");
-            				 reg.setLinList(Lins);
-            				 regList.add(reg);
+        					 }
+	    					 reg.setCancelPenalty(cancelPenalty);
+	    					 //根据取消政策，拼接Deadline,默认为不可取消
+	    					 String Deadline = "<Deadline OffsetTimeUnit=\"Hour\" OffsetUnitMultiplier=\"24\" OffsetDropTime=\"BeforeArrival\" />";
+    				         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");// 自定义时间格式
+    				         Date date_a = simpleDateFormat.parse(start);//字符串转Date
+	    					 if(cancelPenalty.contains("less than 1 day(s)"))
+	    					 {
+	    						 Calendar ca = Calendar.getInstance();
+	    				 		 ca.setTime(date_a);
+	    				 		 ca.add(ca.DATE,-2);
+    	    					 date_a = ca.getTime();
+    	    					 SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+    	    					 String time = sdf.format(date_a);
+    	    					 Deadline = "<Deadline AbsoluteDeadline=\""+time+"\" />";
+	    					 }
+	    					 if(cancelPenalty.contains("less than 2 day(s)"))
+	    					 {
+	    						 Calendar ca = Calendar.getInstance();
+	    				 		 ca.setTime(date_a);
+	    				 		 ca.add(ca.DATE,-4);
+    	    					 date_a = ca.getTime();
+    	    					 SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+    	    					 String time = sdf.format(date_a);
+    	    					 Deadline = "<Deadline AbsoluteDeadline=\""+time+"\" />";
+	    					 }
+	    					 if(cancelPenalty.contains("after 0:00 hours"))
+	    					 {
+	    						 Calendar ca = Calendar.getInstance();
+	    				 		 ca.setTime(date_a);
+	    				 		 ca.add(ca.DATE,-1);
+    	    					 date_a = ca.getTime();
+    	    					 SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+    	    					 String time = sdf.format(date_a);
+    	    					 Deadline = "<Deadline AbsoluteDeadline=\""+time+"\" />";
+	    					 }
+	    					 log.info("推送给携程的取消政策Deadline内容："+Deadline);
+	    					 reg.setDeadline(Deadline);
+	    					 lin.setLinText(linText);
+	    					 tempPrice = AmountUtil.multiply(Double.parseDouble(linText.split("#")[3]), usdrate, 2);
+	    					 tempPrice = AmountUtil.add(tempPrice, tj, 2);
+	    					 lin.setPrr(tempPrice+"");
+	    					 String st = linText.split("#")[7];
+	    					 String ed = linText.split("#")[8];
+	    					 lin.setStart(st.substring(0, 4)+"-"+st.substring(4,6)+"-"+st.substring(6));
+	    					 lin.setEnd(ed.substring(0, 4)+"-"+ed.substring(4,6)+"-"+ed.substring(6,8));
+	    					 Lins.add(lin);
         				 }
+        				 double totalPrice = AmountUtil.multiply(tempPrice, linlist.size() * 1.0, 2);
+        				 reg.setTotal(totalPrice+"");
+        				 reg.setLinList(Lins);
+        				 regList.add(reg);
         			 }
     			}
         		romeStay.setRegList(regList);
