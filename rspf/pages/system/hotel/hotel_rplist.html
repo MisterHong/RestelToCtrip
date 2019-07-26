@@ -1,0 +1,202 @@
+<%
+var headContent = {
+include("/pages/template/head.html"){}
+%>
+<script type="text/javascript">
+    var oper;
+    jQuery(function($) {
+        // 页面方法
+        oper = {
+            width : 450,
+            height : 500,
+            form : document.form1,
+            list : function() {
+                var url = 'system/hotel/GetRTRP';
+                this.form.action = url;
+                this.form.submit();
+            },
+            pushBasicRoomType : function(codigo_hotel,obj) {
+            	var rtcode = $(obj).parents("tr").find(".class-rtcode").text();
+            	var rtdesc = $(obj).parents("tr").find(".class-rtdesc").text();
+            	var ctripdesc = $(obj).parents("tr").find(".ctriprtdesc_input").val();
+            	$.ajax({
+           		    url:"system/hotel/pushBasicRoomType",
+           			type:"post",
+           		    data:{
+           				"codigo_hotel":codigo_hotel,
+           				"rtcode":rtcode,
+           				"rtdesc":rtdesc,
+           				"ctripdesc":ctripdesc
+           			},
+       			    success:function(result){},
+       			    error:function(result){
+       			        var data = result.responseText;
+       					if(data == "Success")
+   						{
+            				alert("基础房型信息已经推送到携程，请在5分钟之后查看推送状态，请勿重复推送！");
+   						}
+       					else
+   						{
+       						alert(data);
+   						}
+       			    }
+           		});
+				return true;
+            },
+            pushSaleType : function(codigo_hotel,obj) {
+            	var rtcode = $(obj).parents("tr").find(".class-rtcode").text();
+            	var rpcode = $(obj).parents("tr").find(".class-rpcode").text();
+            	$.ajax({
+           		    url:"system/hotel/pushSaleType",
+           			type:"post",
+           		    data:{
+           				"codigo_hotel":codigo_hotel,
+           				"rtcode":rtcode,
+           				"rpcode":rpcode
+           			},
+       			    success:function(result){},
+       			    error:function(result){
+       			        var data = result.responseText;
+       					if(data == "Success")
+   						{
+            				alert("售卖房型信息已经推送到携程，请在5分钟之后查看推送状态，请勿重复推送！");
+   						}
+       					else
+   						{
+       						alert(data);
+   						}
+       			    }
+           		});
+				return true;
+            },
+            pushRoomState : function(codigo_hotel,obj,type) {
+            	var rtcode = $(obj).parents("tr").find(".class-rtcode").text();
+            	var rpcode = $(obj).parents("tr").find(".class-rpcode").text();
+            	debugger;
+            	$.ajax({
+           		    url:"system/hotel/pushRoomState",
+           			type:"post",
+           		    data:{
+           				"codigo_hotel":codigo_hotel,
+           				"rtcode":rtcode,
+           				"rpcode":rpcode,
+           				"status":type
+           			},
+       			    success:function(result){},
+       			    error:function(result){
+       			        var data = result.responseText;
+       					if(data == "Success")
+   						{
+            				alert("房态信息已经推送到携程，请勿重复推送！");
+   						}
+       					else
+   						{
+       						alert(data);
+   						}
+       			    }
+           		});
+ 				return true;
+            },
+            pushHousePrice : function(codigo_hotel,obj) {
+            	var rtcode = $(obj).parents("tr").find(".class-rtcode").text();
+            	var rtdesc = $(obj).parents("tr").find(".class-rtdesc").text();
+            	var rpcode = $(obj).parents("tr").find(".class-rpcode").text();
+            	$.ajax({
+           		    url:"system/hotel/pushHousePrice",
+           			type:"post",
+           		    data:{
+           				"codigo_hotel":codigo_hotel,
+           				"rtcode":rtcode,
+           				"rtdesc":rtdesc,
+           				"rpcode":rpcode
+           			},
+       			    success:function(result){},
+       			    error:function(result){
+       			        var data = result.responseText;
+       					if(data == "Success")
+   						{
+            				alert("房价信息已经推送到携程，请在5分钟之后查看推送状态，请勿重复推送！");
+   						}
+       					else
+   						{
+       						alert(data);
+   						}
+       			    }
+           		});
+   				return true;
+            }
+        };
+        //显示Menu索引
+        showMenu('page_hotel');
+    });
+    
+    //分页
+    var paginator = function(page) {
+        oper.list();
+    };
+</script>
+
+<%
+};
+
+var bodyContent = {
+%>
+<form name="form1" action="" method="post"  class="form-inline" role="form">
+	<!-- 菜单 -->
+	<% include("/pages/template/menu.html"){} %>
+	<div class="panel panel-default" style="font-size: 13px;color:red;border-color: rgb(226, 78, 78);">
+	    <div class="panel-body">
+	        <ol class="breadcrumb">
+	            <li class="active">页面操作须知：</li>
+	        </ol>
+	        - 1.本页面展示数据为供应商获取的原始数据，您可以根据该数据选择房型进行推送，请勿重复推送！！！<br/>
+	        - 2.如果您选择某一行数据推送，请在该行依次完成(推送基础房型，推送售卖房型，开房，推送房价).<br/>
+	        - 3.在推送基础房型，推送售卖房型，开房，推送房价时，如果提示异常或者错误，请截图，同时重新推送，出错查过三次，请记录，但不要继续重试.<br/>
+	    	- 4.请不要推送同一房型code的房型多次，只要房型code一致，则表示为同一房型，请勿重复推送，携程无法处理.<br/>
+	    	- 5.开房指推送房间状态为打开，关房指推送房间状态为关闭.<br/>
+	    	- 6.完成推送任务后，可返回查看推送详情，推送详情包括(房型，房价).<br/>
+	    </div>
+	</div>
+	<!-- 数据列表 -->
+	<table class="table table-striped table-bordered table-hover">
+			<thead>
+				<tr>
+					<th name="id">ID</th>
+					<th name="hotelcode">酒店ID</th>
+					<th name="rtcode">基础房型cod</th>
+					<th name="rtdesc">供应商房型描述</th>
+					<th name="rpcode">RatePlan</th>
+					<th name="prr">价格</th>
+					<th name="ctriprtdesc">携程房型英文描述</th>
+					<th width="20%">操作</th>
+				</tr>
+			</thead>
+			<tbody>
+			<% for(item in page.list){ %>
+				<tr>
+					<td>${item.id}</td>
+					<td>${item.hotelcode}</td>
+					<td class="class-rtcode">${item.rtcode}</td>
+					<td class="class-rtdesc" style="width:350px;">${item.rtdesc}</td>
+					<td class="class-rpcode">${item.rpcode}</td>
+					<td>${item.prr}</td>
+					<td>
+						<input class="form-control ctriprtdesc_input" style="width:300px;" type="text" name="ctriprtdesc_id" value="${item.rtdesc}" placeholder="请输入携程房型描述" />
+					</td>
+				<td>
+					<a href="javascript:void(0);" id="BasicRoomType" onclick="oper.pushBasicRoomType('${item.hotelcode}',this);" class="btn btn-sm btn-danger">推送基础房型</a>
+					<a href="javascript:void(0);" id="SaleType" onclick="oper.pushSaleType('${item.hotelcode}',this);" class="btn btn-sm btn-danger">推送售卖房型</a>
+					<br>
+					<a href="javascript:void(0);" id="RoomState" onclick="oper.pushRoomState('${item.hotelcode}',this,1);" style="margin-top:10px;" class="btn btn-sm btn-success">开房</a>
+					<a href="javascript:void(0);" id="RoomState" onclick="oper.pushRoomState('${item.hotelcode}',this,2);" style="margin-top:10px;" class="btn btn-sm btn-success">关房</a>
+					<a href="javascript:void(0);" id="HousePrice" onclick="oper.pushHousePrice('${item.hotelcode}',this);" style="margin-top:10px;" class="btn btn-sm btn-success">推送房价</a>
+				</td>
+				</tr>
+			<% } %>
+			</tbody>
+	</table>
+	<%include("/pages/includes/paginator.html"){} %>
+</form>
+<%}; %>
+<% layout("/pages/template/_layout.html",{head:headContent,body:bodyContent}){ %>
+<%} %>
