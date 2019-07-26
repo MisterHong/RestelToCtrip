@@ -963,9 +963,7 @@ public class HttpUtils {
             					 if(null == cancelPenalty || "".equals(cancelPenalty))
             					 {
             						 String xmlInfo144 = HttpUtils.GetRestelXml144(hotelCode,linText);
-            						 log.info("取消政策请求报文"+xmlInfo144);
         	     					 String result144 = HttpUtils.HttpClientPost(xmlInfo144);
-        	     					 log.info("取消政策响应报文"+result144);
         							 InputStream stream144 = new ByteArrayInputStream(result144.getBytes());
         	    					 cancelPenalty = HttpUtils.Parse144Xml(stream144);
         	    					 if(null == cancelPenalty || "".equals(cancelPenalty))
@@ -1035,27 +1033,42 @@ public class HttpUtils {
         				 if(!isOn)
         				 {
         					 Reg reg = new Reg();
-        					 int meal = 2;
-	    		             String RPcode = element2.attribute("cod").getText();
-	    		             reg.setRpCode(RPcode);
-	    		             if ((!RPcode.equals("RO")) && (!RPcode.equals("OB"))) {
-	    		                RPcode.equals("SA");
-	    		             }
-	    		             if ((RPcode.equals("FB")) || (RPcode.equals("PC")) || (RPcode.equals("AI")) || (RPcode.equals("TI")))
-	    		             {
-	    		               reg.setBF(true);
-	    		               reg.setLUN(true);
-	    		               reg.setBD(true);
-	    		             }
-	    		             if ((RPcode.equals("BB")) || (RPcode.equals("AD"))) {
-	    		               reg.setBF(true);
-	    		             }
-	    		             if ((RPcode.equals("HB")) || (RPcode.equals("MP")))
-	    		             {
-	    		               reg.setBF(true);
-	    		               reg.setBD(true);
-	    		             }
-	    		             reg.setNumberOfMeal(meal+"");
+            				 int meal = 0;
+            				 String RPcode = element2.attribute("cod").getText();
+            				 reg.setRpCode(RPcode);
+            				 if(RPcode.equals("RO")||RPcode.equals("OB")||RPcode.equals("SA"))
+            				 {
+            					 reg.setBD(true);
+            				 }
+            				 if(RPcode.equals("FB")||RPcode.equals("PC")||RPcode.equals("AI")||RPcode.equals("TI"))
+            				 {
+            					 reg.setBD(true);
+            					 reg.setBF(true);
+            					 reg.setLUN(true);
+            				 }
+            				 if(RPcode.equals("BB")||RPcode.equals("AD"))
+    						 {
+            					 reg.setBF(true);
+            					 reg.setBD(true);
+    						 }
+            				 if(RPcode.equals("HB")||RPcode.equals("MP"))
+    						 {
+            					 reg.setBF(true);
+            					 reg.setLUN(true);
+    						 }
+            				 if(reg.isBF())
+            				 {
+            					 meal++;
+            				 }
+            				 if(reg.isBD())
+            				 {
+            					 meal++;
+            				 }
+            				 if(reg.isLUN())
+            				 {
+            					 meal++;
+            				 }
+            				 reg.setNumberOfMeal(meal+"");
             				 List<Element> linlist = element2.elements("lin");
             				 List<Lin> Lins = new ArrayList<Lin>();
             				 String cancelPenalty  = "";
@@ -1163,27 +1176,42 @@ public class HttpUtils {
         				 if(!isOn)
         				 {
         					 Reg reg = new Reg();
-        					 int meal = 2;
-	    		             String RPcode = element2.attribute("cod").getText();
-	    		             reg.setRpCode(RPcode);
-	    		             if ((!RPcode.equals("RO")) && (!RPcode.equals("OB"))) {
-	    		                RPcode.equals("SA");
-	    		             }
-	    		             if ((RPcode.equals("FB")) || (RPcode.equals("PC")) || (RPcode.equals("AI")) || (RPcode.equals("TI")))
-	    		             {
-	    		               reg.setBF(true);
-	    		               reg.setLUN(true);
-	    		               reg.setBD(true);
-	    		             }
-	    		             if ((RPcode.equals("BB")) || (RPcode.equals("AD"))) {
-	    		               reg.setBF(true);
-	    		             }
-	    		             if ((RPcode.equals("HB")) || (RPcode.equals("MP")))
-	    		             {
-	    		               reg.setBF(true);
-	    		               reg.setBD(true);
-	    		             }
-	    		             reg.setNumberOfMeal(meal+"");
+            				 int meal = 0;
+            				 String RPcode = element2.attribute("cod").getText();
+            				 reg.setRpCode(RPcode);
+            				 if(RPcode.equals("RO")||RPcode.equals("OB")||RPcode.equals("SA"))
+            				 {
+            					 reg.setBD(true);
+            				 }
+            				 if(RPcode.equals("FB")||RPcode.equals("PC")||RPcode.equals("AI")||RPcode.equals("TI"))
+            				 {
+            					 reg.setBD(true);
+            					 reg.setBF(true);
+            					 reg.setLUN(true);
+            				 }
+            				 if(RPcode.equals("BB")||RPcode.equals("AD"))
+    						 {
+            					 reg.setBF(true);
+            					 reg.setBD(true);
+    						 }
+            				 if(RPcode.equals("HB")||RPcode.equals("MP"))
+    						 {
+            					 reg.setBF(true);
+            					 reg.setLUN(true);
+    						 }
+            				 if(reg.isBF())
+            				 {
+            					 meal++;
+            				 }
+            				 if(reg.isBD())
+            				 {
+            					 meal++;
+            				 }
+            				 if(reg.isLUN())
+            				 {
+            					 meal++;
+            				 }
+            				 reg.setNumberOfMeal(meal+"");
             				 List<Element> linlist = element2.elements("lin");
             				 List<Lin> Lins = new ArrayList<Lin>();
             				 String cancelPenalty  = "";
@@ -1264,27 +1292,42 @@ public class HttpUtils {
         				 if(!isOn)
         				 {
         					 Reg reg = new Reg();
-        					 int meal = 2;
-	    		             String RPcode = element2.attribute("cod").getText();
-	    		             reg.setRpCode(RPcode);
-	    		             if ((!RPcode.equals("RO")) && (!RPcode.equals("OB"))) {
-	    		                RPcode.equals("SA");
-	    		             }
-	    		             if ((RPcode.equals("FB")) || (RPcode.equals("PC")) || (RPcode.equals("AI")) || (RPcode.equals("TI")))
-	    		             {
-	    		               reg.setBF(true);
-	    		               reg.setLUN(true);
-	    		               reg.setBD(true);
-	    		             }
-	    		             if ((RPcode.equals("BB")) || (RPcode.equals("AD"))) {
-	    		               reg.setBF(true);
-	    		             }
-	    		             if ((RPcode.equals("HB")) || (RPcode.equals("MP")))
-	    		             {
-	    		               reg.setBF(true);
-	    		               reg.setBD(true);
-	    		             }
-	    		             reg.setNumberOfMeal(meal+"");
+            				 int meal = 0;
+            				 String RPcode = element2.attribute("cod").getText();
+            				 reg.setRpCode(RPcode);
+            				 if(RPcode.equals("RO")||RPcode.equals("OB")||RPcode.equals("SA"))
+            				 {
+            					 reg.setBD(true);
+            				 }
+            				 if(RPcode.equals("FB")||RPcode.equals("PC")||RPcode.equals("AI")||RPcode.equals("TI"))
+            				 {
+            					 reg.setBD(true);
+            					 reg.setBF(true);
+            					 reg.setLUN(true);
+            				 }
+            				 if(RPcode.equals("BB")||RPcode.equals("AD"))
+    						 {
+            					 reg.setBF(true);
+            					 reg.setBD(true);
+    						 }
+            				 if(RPcode.equals("HB")||RPcode.equals("MP"))
+    						 {
+            					 reg.setBF(true);
+            					 reg.setLUN(true);
+    						 }
+            				 if(reg.isBF())
+            				 {
+            					 meal++;
+            				 }
+            				 if(reg.isBD())
+            				 {
+            					 meal++;
+            				 }
+            				 if(reg.isLUN())
+            				 {
+            					 meal++;
+            				 }
+            				 reg.setNumberOfMeal(meal+"");
             				 List<Element> linlist = element2.elements("lin");
             				 List<Lin> Lins = new ArrayList<Lin>();
             				 String cancelPenalty  = "";
