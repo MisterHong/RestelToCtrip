@@ -75,7 +75,8 @@ var bodyContent = {
 					<th name="502">502</th>
 					<th name="504">504</th>
 					<th name="orderState">状态</th>
-					<th name="createtime">时间</th>   
+					<th name="createtime">时间</th>
+					<!-- <th name= "qrm">确认码</th>  --> 
 					<th width="5%">操作</th>
 				</tr>
 			</thead>
@@ -110,6 +111,10 @@ var bodyContent = {
 					<%	} %>
 					</td>
 					<td>${item.createtime}</td>
+				<!-- <td>
+					<input class="form-control qr" type="text" name="ctriprtdesc_qr" style="width:80px;" value="${item.qrh}" placeholder="确认号" />
+				</td>
+				 -->
 				<td>
 				<a href="javascript:void(0);" ${item.orderState>2?"disabled":""} ${item.orderState<2?"disabled":""} class="btn btn-sm btn-danger" onclick="oper.push(${item.id});">确认</a> 
 				</td>
