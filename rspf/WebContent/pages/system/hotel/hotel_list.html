@@ -40,6 +40,30 @@
 			    });
 				return true;
 			},
+			updateTj : function(codigo_hotel,obj){
+				var taijia = $(obj).parents("tr").find(".tj").val();
+            	$.ajax({
+           		    url:"system/hotel/updateTj",
+           			type:"post",
+           		    data:{
+           				"cod_hotel":codigo_hotel,
+           				"tj":taijia,
+           			},
+       			    success:function(result){},
+       			    error:function(result){
+       			        var data = result.responseText;
+       					if(data == "Success")
+   						{
+            				alert("抬价更新已经推送到携程，请勿重复推送！");
+   						}
+       					else
+   						{
+       						alert(data);
+   						}
+       			    }
+           		});
+   				return true;
+			},
 			updateRate : function(){
 				var usdRate = $("#usdRate").val();
 				if(usdRate != null && usdRate != '' && usdRate > 1.0)
@@ -158,6 +182,7 @@ var bodyContent = {
 					<th name="ctripHotelCode">美元汇率(元)</th> 
 					<th name="ctripHotelCode">抬价金额(元)</th>  
 					<th name="ctripHotelCode">备注</th> 
+					<th name="tj">抬价</th>
 					<th width="20%">推送数据到携程</th>
 				</tr>
 			</thead>
@@ -185,10 +210,16 @@ var bodyContent = {
 					</td>
 					<td>
 						<input class="form-control tj" type="text" name="ctriprtdesc_tj" style="width:80px;" value="${item.tj}" placeholder="抬价金额" />
-					</td> 
+					</td>
+ 
 					<td>
 						<input class="form-control remark" type="text" name="remark" style="width:80px;" value="${item.remark}" placeholder="备注信息" />
 					</td>
+					
+					<td>
+						<a href="javascript:void(0);" id="tj" class="btn btn-sm btn-success" style="margin-top:10px;" onclick="oper.updateTj('${item.codigo_hotel}',this);">更新</a>
+					</td>
+					
 				<td>
 					<!--
 					<a href="javascript:void(0);" id="all" ${item.status>1?"disabled":""}  class="btn btn-sm btn-primary" onclick="oper.push('${item.codigo_hotel}');">一键推送</a>
@@ -206,10 +237,12 @@ var bodyContent = {
 				</tr>
 			<% } %>
 			</tbody>
+
 		</table>
 		<%include("/pages/includes/paginator.html"){} %>
 	</form>
 <%}; %>
+
 
 
 <% layout("/pages/template/_layout.html",{head:headContent,body:bodyContent}){ %>

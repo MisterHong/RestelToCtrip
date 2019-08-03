@@ -151,7 +151,6 @@ public class HotelController extends BaseProjectController {
 		Page<SysMenu> page = SysMenu.dao.paginate(getPaginator(), "select *",
 				sql.toString().toString());
 		setAttr("page", page);
-		setAttr("tj",hotelInfoRecord.getDouble("tj"));
 		render(path + "rplist.html");
 	}
 	
@@ -367,38 +366,45 @@ public class HotelController extends BaseProjectController {
 	 */
 	public void updateTj()
 	{
-		String codigo_hotel = getPara("codigo_hotel");
+		String codigo_hotel = getPara("cod_hotel");
 		String moy = getPara("tj");
-		String rtcode = getPara("rtcode");
-		//String rtdesc = getPara("rtdesc");
-		String rpcode = getPara("rpcode");
-		Record tempRecord = Db.findFirst("select rtdesc from sys_hotels_roomtype where hotelcode = '"+codigo_hotel+"' and rtcode = '"+rtcode+"'");
-		String rtdesc = tempRecord.getStr("rtdesc");
-		String ctrip_api_url = Config.getStr("ctrip_api_url");
-		log.info("更新酒店抬价："+codigo_hotel+"，基础，售卖，描述"+rtcode+"\t"+rpcode+"\t"+rtdesc);
-		try {
-			Db.update("update sys_hotels_info set tj = " + moy + " where codigo_hotel = '"+codigo_hotel+"'");
-			Record hotelInfoRecord = Db.findById("sys_hotels_info", "codigo_hotel", codigo_hotel);
-			//推送价格信息
-			for (int i = 0; i < 6; i++) 
+		String sql = "select * from sys_hotels_saletype where hotelcode = '"+codigo_hotel+"'";
+		List<Record> rpricelist = Db.find(sql);
+		for (Record record : rpricelist) {
+			String rtcode = record.getStr("rtcode");
+			String rpcode = record.getStr("rpcode");
+			Record tempRecord = Db.findFirst("select rtdesc from sys_hotels_roomtype where hotelcode = '"+codigo_hotel+"' and rtcode = '"+rtcode+"'");
+			String rtdesc = tempRecord.getStr("rtdesc");
+			String ctrip_api_url = Config.getStr("ctrip_api_url");
+			log.info("更新酒店抬价："+codigo_hotel+"，基础，售卖，描述"+rtcode+"\t"+rpcode+"\t"+rtdesc);
+			try {
+				Db.update("update sys_hotels_info set tj = " + moy + " where codigo_hotel = '"+codigo_hotel+"'");
+				Record hotelInfoRecord = Db.findById("sys_hotels_info", "codigo_hotel", codigo_hotel);
+				//推送价格信息
+				for (int i = 0; i < 6; i++) 
+				{
+					String start = DateUtils.getAddDayNow(DateUtils.MDY,i*15);
+					String end = DateUtils.getAddDayNow(DateUtils.MDY,(i+1)*15);
+					String xmlInfoRR = HttpUtils.GetRestelXml110(codigo_hotel, hotelInfoRecord.getStr("pais"), "", start, end, "1", "2-0","");
+					log.info("更新酒店抬价："+codigo_hotel+"，房价供应商请求报文："+xmlInfoRR);
+					String resultRR = HttpUtils.HttpClientPost(xmlInfoRR);
+					log.info("更新酒店抬价："+codigo_hotel+"，房价供应商响应报文："+resultRR);
+					InputStream streamRR = new ByteArrayInputStream(resultRR.getBytes());
+					HttpUtils.Parse110XmlWithRR(streamRR,codigo_hotel,rtcode,rpcode,rtdesc,hotelInfoRecord.getDouble("usdrate"),hotelInfoRecord.getDouble("tj"),ctrip_api_url);
+				}
+			} catch (Exception e) 
 			{
-				String start = DateUtils.getAddDayNow(DateUtils.MDY,i*15);
-				String end = DateUtils.getAddDayNow(DateUtils.MDY,(i+1)*15);
-				String xmlInfoRR = HttpUtils.GetRestelXml110(codigo_hotel, hotelInfoRecord.getStr("pais"), "", start, end, "1", "2-0","");
-				log.info("更新酒店抬价："+codigo_hotel+"，房价供应商请求报文："+xmlInfoRR);
-				String resultRR = HttpUtils.HttpClientPost(xmlInfoRR);
-				log.info("更新酒店抬价："+codigo_hotel+"，房价供应商响应报文："+resultRR);
-				InputStream streamRR = new ByteArrayInputStream(resultRR.getBytes());
-				HttpUtils.Parse110XmlWithRR(streamRR,codigo_hotel,rtcode,rpcode,rtdesc,hotelInfoRecord.getDouble("usdrate"),hotelInfoRecord.getDouble("tj"),ctrip_api_url);
+				log.error("更新酒店抬价："+codigo_hotel+"房价时出错，原因为："+e.getMessage());
+				renderJson("更新酒店抬价："+codigo_hotel+"房价时失败!");
+				return;
 			}
-		} catch (Exception e) 
-		{
-			log.error("更新酒店抬价："+codigo_hotel+"房价时出错，原因为："+e.getMessage());
-			renderJson("更新酒店抬价："+codigo_hotel+"房价时失败!");
+			renderJson("Success");
 			return;
-		}
 
-		renderJson("Success");
+		}
+		renderJson("更新酒店"+codigo_hotel+"抬价失败!");
+
+
 	}
 	
 	/**
