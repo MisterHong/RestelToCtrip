@@ -43,6 +43,39 @@ include("/pages/template/head.html"){}
            		});
 				return true;
             },
+			updateTj : function(codigo_hotel,obj){
+				var taijia = $(obj).parents("tr").find(".tj").val();
+            	var rtcode = $(obj).parents("tr").find(".class-rtcode").text();
+            	var rpcode = $(obj).parents("tr").find(".class-rpcode").text();
+				if(taijia == null || taijia == '' || taijia < 0.0)
+				{
+					alert("非法的酒店抬价金额！！！");
+					return false;
+				}
+            	$.ajax({
+           		    url:"system/hotel/updateTj",
+           			type:"post",
+           		    data:{
+           				"codigo_hotel":codigo_hotel,
+           				"tj":taijia,
+           				"rtcode":rtcode,
+           				"rpcode":rpcode
+           			},
+       			    success:function(result){},
+       			    error:function(result){
+       			        var data = result.responseText;
+       					if(data == "Success")
+   						{
+            				alert("抬价更新已经推送到携程，请勿重复推送！");
+   						}
+       					else
+   						{
+       						alert(data);
+   						}
+       			    }
+           		});
+   				return true;
+			},
             pushSaleType : function(codigo_hotel,obj) {
             	var rtcode = $(obj).parents("tr").find(".class-rtcode").text();
             	var rpcode = $(obj).parents("tr").find(".class-rpcode").text();
@@ -167,7 +200,9 @@ var bodyContent = {
 					<th name="rtdesc">供应商房型描述</th>
 					<th name="rpcode">RatePlan</th>
 					<th name="prr">价格</th>
+					<th name="hoteltj">抬价金额(元)</th>
 					<th name="ctriprtdesc">携程房型英文描述</th>
+					<th name="tj">抬价</th>
 					<th width="20%">操作</th>
 				</tr>
 			</thead>
@@ -177,11 +212,17 @@ var bodyContent = {
 					<td>${item.id}</td>
 					<td>${item.hotelcode}</td>
 					<td class="class-rtcode">${item.rtcode}</td>
-					<td class="class-rtdesc" style="width:350px;">${item.rtdesc}</td>
+					<td class="class-rtdesc" style="width:330px;">${item.rtdesc}</td>
 					<td class="class-rpcode">${item.rpcode}</td>
 					<td>${item.prr}</td>
 					<td>
+						<input class="form-control tj" type="text" name="ctriprtdesc_tj" style="width:80px;" value="${tj}" placeholder="" />
+					</td>
+					<td>
 						<input class="form-control ctriprtdesc_input" style="width:300px;" type="text" name="ctriprtdesc_id" value="${item.rtdesc}" placeholder="请输入携程房型描述" />
+					</td>
+					<td>
+						<a href="javascript:void(0);" id="tj" class="btn btn-sm btn-success" style="margin-top:10px;" onclick="oper.updateTj('${item.hotelcode}',this);">更新抬价</a>
 					</td>
 				<td>
 					<a href="javascript:void(0);" id="BasicRoomType" onclick="oper.pushBasicRoomType('${item.hotelcode}',this);" class="btn btn-sm btn-danger">推送基础房型</a>

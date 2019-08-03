@@ -134,8 +134,8 @@ public class HotelController extends BaseProjectController {
 		Db.update("delete from sys_hotels_temp_roomtype where hotelcode='"+codigo_hotel+"'");
 		try {
 	    	//开始和结束日期都向后
-	        String start = DateUtils.getAddDayNow("MM/dd/yyyy", 20);
-	        String end = DateUtils.getAddDayNow("MM/dd/yyyy", 21);
+	        String start = DateUtils.getAddDayNow("MM/dd/yyyy", 15);
+	        String end = DateUtils.getAddDayNow("MM/dd/yyyy", 16);
             String xmlInfo110 = HttpUtils.GetRestelXml110(hotelInfoRecord.getStr("codigo_hotel"), hotelInfoRecord.getStr("pais"), "", start, end, "1", "2-0", "");
             log.info("获取酒店："+codigo_hotel+"房型请求报文："+xmlInfo110);
             String result110 = HttpUtils.HttpClientPost(xmlInfo110);
@@ -151,6 +151,7 @@ public class HotelController extends BaseProjectController {
 		Page<SysMenu> page = SysMenu.dao.paginate(getPaginator(), "select *",
 				sql.toString().toString());
 		setAttr("page", page);
+		setAttr("tj",hotelInfoRecord.getDouble("tj"));
 		render(path + "rplist.html");
 	}
 	
@@ -333,6 +334,7 @@ public class HotelController extends BaseProjectController {
 		renderJson("Success");
 	}
 	
+	
 	/***
 	 * 酒店详情-房型列表
 	 */
@@ -358,6 +360,45 @@ public class HotelController extends BaseProjectController {
 		List<Record> rpricelist = Db.find(sql);
 		setAttr("rpricelist", rpricelist);
 		render(path + "rprice.html");
+	}
+	
+	/**
+	 * 更新抬价
+	 */
+	public void updateTj()
+	{
+		String codigo_hotel = getPara("codigo_hotel");
+		String moy = getPara("tj");
+		String rtcode = getPara("rtcode");
+		//String rtdesc = getPara("rtdesc");
+		String rpcode = getPara("rpcode");
+		Record tempRecord = Db.findFirst("select rtdesc from sys_hotels_roomtype where hotelcode = '"+codigo_hotel+"' and rtcode = '"+rtcode+"'");
+		String rtdesc = tempRecord.getStr("rtdesc");
+		String ctrip_api_url = Config.getStr("ctrip_api_url");
+		log.info("更新酒店抬价："+codigo_hotel+"，基础，售卖，描述"+rtcode+"\t"+rpcode+"\t"+rtdesc);
+		try {
+			Db.update("update sys_hotels_info set tj = " + moy + " where codigo_hotel = '"+codigo_hotel+"'");
+			Record hotelInfoRecord = Db.findById("sys_hotels_info", "codigo_hotel", codigo_hotel);
+			//推送价格信息
+			for (int i = 0; i < 6; i++) 
+			{
+				String start = DateUtils.getAddDayNow(DateUtils.MDY,i*15);
+				String end = DateUtils.getAddDayNow(DateUtils.MDY,(i+1)*15);
+				String xmlInfoRR = HttpUtils.GetRestelXml110(codigo_hotel, hotelInfoRecord.getStr("pais"), "", start, end, "1", "2-0","");
+				log.info("更新酒店抬价："+codigo_hotel+"，房价供应商请求报文："+xmlInfoRR);
+				String resultRR = HttpUtils.HttpClientPost(xmlInfoRR);
+				log.info("更新酒店抬价："+codigo_hotel+"，房价供应商响应报文："+resultRR);
+				InputStream streamRR = new ByteArrayInputStream(resultRR.getBytes());
+				HttpUtils.Parse110XmlWithRR(streamRR,codigo_hotel,rtcode,rpcode,rtdesc,hotelInfoRecord.getDouble("usdrate"),hotelInfoRecord.getDouble("tj"),ctrip_api_url);
+			}
+		} catch (Exception e) 
+		{
+			log.error("更新酒店抬价："+codigo_hotel+"房价时出错，原因为："+e.getMessage());
+			renderJson("更新酒店抬价："+codigo_hotel+"房价时失败!");
+			return;
+		}
+
+		renderJson("Success");
 	}
 	
 	/**
