@@ -111,8 +111,8 @@ public class OrderCtripController  extends BaseProjectController {
 				int number = Integer.parseInt(check.getQuantity());
 				for (int i = 1; i < number; i++) 
 				{
-					xml.append("<numhab"+i+">1</numhab"+i+">"); //房间类型1
-			    	xml.append("<paxes"+i+">2-0</paxes"+i+">"); //房间客人类别
+					xml.append("<numhab"+(i+1)+">1</numhab"+(i+1)+">"); //房间类型1
+			    	xml.append("<paxes"+(i+1)+">2-0</paxes"+(i+1)+">"); //房间客人类别
 				}
 			}
 		
@@ -182,8 +182,8 @@ public class OrderCtripController  extends BaseProjectController {
 						int number = Integer.parseInt(check.getQuantity());
 						for (int i = 1; i < number; i++) 
 						{
-							xml.append("<numhab"+i+">1</numhab"+i+">"); //房间类型1
-					    	xml.append("<paxes"+i+">"+adult+"-0</paxes"+i+">"); //房间客人类别
+							xml.append("<numhab"+(i+1)+">1</numhab"+(i+1)+">"); //房间类型1
+					    	xml.append("<paxes"+(i+1)+">"+adult+"-0</paxes"+(i+1)+">"); //房间客人类别
 						}
 					}
 					else
@@ -462,8 +462,8 @@ public class OrderCtripController  extends BaseProjectController {
 				int number = Integer.parseInt(orderNew.getOrderRoomStay().getNumberOfUnits());
 				for (int i = 1; i < number; i++) 
 				{
-					xml.append("<numhab"+i+">1</numhab"+i+">"); //房间类型1
-			    	xml.append("<paxes"+i+">"+adult+"-0</paxes"+i+">"); //房间客人类别
+					xml.append("<numhab"+(i+1)+">1</numhab"+(i+1)+">"); //房间类型1
+			    	xml.append("<paxes"+(i+1)+">"+adult+"-0</paxes"+(i+1)+">"); //房间客人类别
 				}
 				nulberUtils = number;
 			}
