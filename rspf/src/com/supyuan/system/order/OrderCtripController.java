@@ -295,24 +295,8 @@ public class OrderCtripController  extends BaseProjectController {
 	        setAttr("warning", warning);
 	        
 	        orderNew.setUniqueID(UniqueID);
-	        OrderRoomStay orderRoomStay = new OrderRoomStay();
-	        Element RoomStay = OTA_HotelResRQ.element("HotelReservations").element("HotelReservation").element("RoomStays").element("RoomStay");
-	        String RoomTypeCode = RoomStay.element("RoomTypes").element("RoomType").attribute("RoomTypeCode").getText();
-	        String RatePlansCode = RoomStay.element("RatePlans").element("RatePlan").attribute("RatePlanCode").getText();
-	        String HotelCode = RoomStay.element("BasicPropertyInfo").attribute("HotelCode").getText();
-	        orderRoomStay.setRoomTypeCode(RoomTypeCode);
-	        orderRoomStay.setRatePlanCode(RatePlansCode);
-	        orderRoomStay.setHotelCode(HotelCode);
-	        Element RoomRate = RoomStay.element("RoomRates").element("RoomRate");
-	        String NumberOfUnits = RoomRate.attribute("NumberOfUnits").getText();
-	        String EffectiveDate = RoomRate.element("Rates").element("Rate").attribute("EffectiveDate").getText();
-	        String ExpireDate = RoomRate.element("Rates").element("Rate").attribute("ExpireDate").getText();
-	        String AmountAfterTax = RoomRate.element("Rates").element("Rate").element("Base").attribute("AmountAfterTax").getText();
-	        orderRoomStay.setNumberOfUnits(NumberOfUnits);
-	        orderRoomStay.setEffectiveDate(EffectiveDate); //start date
-	        orderRoomStay.setExpireDate(ExpireDate);	//end date
-	        orderRoomStay.setAmountAfterTax(AmountAfterTax);
-	        orderNew.setOrderRoomStays(orderRoomStay);
+	        
+	        //客人信息
 	        Element ResGuest =  OTA_HotelResRQ.element("HotelReservations").element("HotelReservation").element("ResGuests").element("ResGuest");
 	        OrderGuest orderGuest = new OrderGuest();
 	        if(null != ResGuest.attribute("ArrivalTime"))
@@ -330,7 +314,8 @@ public class OrderCtripController  extends BaseProjectController {
 	        	if(null != element.attribute("Age"))
 	        	{
 	        		persion.setAge(element.attribute("Age").getText());
-	        	}
+	        	}                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               
+	        	
 	        	persion.setGivenName(element.element("GivenName").getTextTrim());
 	        	persion.setSurname(element.element("Surname").getTextTrim());
 	        	if(null != element.attribute("Gender"))
@@ -438,98 +423,131 @@ public class OrderCtripController  extends BaseProjectController {
 					orderNew.setResID507(element.attribute("ResID_Value").getText());
 				}
 			}
+	        
+	        
+	        //房态信息调整
+	        OrderRoomStay orderRoomStay = new OrderRoomStay();
+	        Element RoomStay = OTA_HotelResRQ.element("HotelReservations").element("HotelReservation").element("RoomStays").element("RoomStay");
+	        String RoomTypeCode = RoomStay.element("RoomTypes").element("RoomType").attribute("RoomTypeCode").getText();
+	        String RatePlansCode = RoomStay.element("RatePlans").element("RatePlan").attribute("RatePlanCode").getText();
+	        String HotelCode = RoomStay.element("BasicPropertyInfo").attribute("HotelCode").getText();
+	        orderRoomStay.setRoomTypeCode(RoomTypeCode);
+	        orderRoomStay.setRatePlanCode(RatePlansCode);
+	        orderRoomStay.setHotelCode(HotelCode);
+	        Element RoomRate = RoomStay.element("RoomRates").element("RoomRate");
+	        String NumberOfUnits = RoomRate.attribute("NumberOfUnits").getText();
+	       
+	        //供应商总价
+	        double total = 0.0;
+	        List<Lin> lins = new ArrayList<Lin>();
+	        int nulberUtils = 0;
+	        List<Element> rates = RoomRate.element("Rates").elements("Rate");
+	        for(Element rate : rates){
+	        	String EffectiveDate = rate.attribute("EffectiveDate").getText();
+	        	String ExpireDate= rate.attribute("ExpireDate").getText();
+	        	String AmountAfterTax = rate.element("Base").attribute("AmountAfterTax").getText();
+		        orderRoomStay.setNumberOfUnits(NumberOfUnits);
+		        orderRoomStay.setEffectiveDate(EffectiveDate); //start date
+		        orderRoomStay.setExpireDate(ExpireDate);	//end date
+		        orderRoomStay.setAmountAfterTax(AmountAfterTax);
+		        orderNew.setOrderRoomStays(orderRoomStay);
 
-	        Record hotelInfoRecord = Db.findFirst("select * from sys_hotels_info where codigo_hotel = "+orderRoomStay.getHotelCode());
-			String[] array1 = orderRoomStay.getEffectiveDate().split("-"); //2019-04-13
-			String start = array1[1]+"/"+array1[2]+"/"+array1[0];
-			String[] array2 = orderRoomStay.getExpireDate().split("-"); //2019-04-14
-			String end = array2[1]+"/"+array2[2]+"/"+array2[0];
-			long days = DateUtils.between_days(orderRoomStay.getEffectiveDate(), orderRoomStay.getExpireDate());//多少晚
-			
-			int count = Integer.parseInt(orderNew.getGuestCount());
-			//获取酒店房型的最大入住人数
-			Record rtrecord = Db.findFirst("select adults from sys_hotels_roomtype where hotelcode ='"+orderRoomStay.getHotelCode()+"' and rtcode='"+orderRoomStay.getRoomTypeCode()+"'");
-			int adult = 2;
-			if(null != rtrecord.getInt("adults"))
-			{
-				adult = rtrecord.getInt("adults");
-			}
-			int nulberUtils = 1;
-			String ct = "1-0";
-			StringBuffer xml = new StringBuffer();
-			if(null != orderNew.getOrderRoomStay().getNumberOfUnits())
-			{
-				int number = Integer.parseInt(orderNew.getOrderRoomStay().getNumberOfUnits());
-				for (int i = 1; i < number; i++) 
+		        Record hotelInfoRecord = Db.findFirst("select * from sys_hotels_info where codigo_hotel = "+orderRoomStay.getHotelCode());
+				String[] array1 = orderRoomStay.getEffectiveDate().split("-"); //2019-04-13
+				String start = array1[1]+"/"+array1[2]+"/"+array1[0];
+				String[] array2 = orderRoomStay.getExpireDate().split("-"); //2019-04-14
+				String end = array2[1]+"/"+array2[2]+"/"+array2[0];
+				long days = DateUtils.between_days(orderRoomStay.getEffectiveDate(), orderRoomStay.getExpireDate());//多少晚
+				
+				int count = Integer.parseInt(orderNew.getGuestCount());
+				//获取酒店房型的最大入住人数
+				Record rtrecord = Db.findFirst("select adults from sys_hotels_roomtype where hotelcode ='"+orderRoomStay.getHotelCode()+"' and rtcode='"+orderRoomStay.getRoomTypeCode()+"'");
+				int adult = 2;
+				if(null != rtrecord.getInt("adults"))
 				{
-					xml.append("<numhab"+(i+1)+">1</numhab"+(i+1)+">"); //房间类型1
-			    	xml.append("<paxes"+(i+1)+">"+adult+"-0</paxes"+(i+1)+">"); //房间客人类别
+					adult = rtrecord.getInt("adults");
 				}
-				nulberUtils = number;
-			}
-			else
-			{
+				nulberUtils = 1;
+				String ct = "1-0";
+				StringBuffer xml = new StringBuffer();
+				if(null != orderNew.getOrderRoomStay().getNumberOfUnits())
+				{
+					int number = Integer.parseInt(orderNew.getOrderRoomStay().getNumberOfUnits());
+					for (int i = 1; i < number; i++) 
+					{
+						xml.append("<numhab"+(i+1)+">1</numhab"+(i+1)+">"); //房间类型1
+				    	xml.append("<paxes"+(i+1)+">"+adult+"-0</paxes"+(i+1)+">"); //房间客人类别
+					}
+					nulberUtils = number;
+				}
+				else
+				{
+					if(count > adult)
+					{
+						int zc = count / adult;
+						int ys = count % adult;
+						if(ys == 0)
+						{
+							for (int i = 1; i < zc; i++) 
+							{
+								xml.append("<numhab"+(i+1)+">1</numhab"+(i+1)+">"); //房间类型1
+		    			    	xml.append("<paxes"+(i+1)+">"+adult+"-0</paxes"+(i+1)+">"); //房间客人类别
+							}
+							nulberUtils = zc;
+						}
+						else
+						{
+							int i = 1;
+							for (; i < zc; i++) 
+							{
+								xml.append("<numhab"+(i+1)+">1</numhab"+(i+1)+">"); //房间类型1
+		    			    	xml.append("<paxes"+(i+1)+">"+adult+"-0</paxes"+(i+1)+">"); //房间客人类别
+							}
+							xml.append("<numhab"+(i+1)+">1</numhab"+(i+1)+">"); //房间类型1
+	    			    	xml.append("<paxes"+(i+1)+">"+ys+"-0</paxes"+(i+1)+">"); //房间客人类别
+	    			    	nulberUtils = (zc+1);
+						}
+					}
+				}
+				
 				if(count > adult)
 				{
-					int zc = count / adult;
-					int ys = count % adult;
-					if(ys == 0)
-					{
-						for (int i = 1; i < zc; i++) 
-						{
-							xml.append("<numhab"+(i+1)+">1</numhab"+(i+1)+">"); //房间类型1
-	    			    	xml.append("<paxes"+(i+1)+">"+adult+"-0</paxes"+(i+1)+">"); //房间客人类别
-						}
-						nulberUtils = zc;
-					}
-					else
-					{
-						int i = 1;
-						for (; i < zc; i++) 
-						{
-							xml.append("<numhab"+(i+1)+">1</numhab"+(i+1)+">"); //房间类型1
-	    			    	xml.append("<paxes"+(i+1)+">"+adult+"-0</paxes"+(i+1)+">"); //房间客人类别
-						}
-						xml.append("<numhab"+(i+1)+">1</numhab"+(i+1)+">"); //房间类型1
-    			    	xml.append("<paxes"+(i+1)+">"+ys+"-0</paxes"+(i+1)+">"); //房间客人类别
-    			    	nulberUtils = (zc+1);
-					}
+					ct = adult+"-0";
 				}
-			}
+				else
+				{
+					ct = count+"-0";
+				}
+				
+		        String xmlInfo110 = HttpUtils.GetRestelXml110(orderRoomStay.getHotelCode(),hotelInfoRecord.getStr("pais"),hotelInfoRecord.getStr("codprovincia"), start, end, "1", ct ,xml.toString());
+		        System.out.println("供应商请求报文："+xmlInfo110);
+		        String result110 = HttpUtils.HttpClientPost(xmlInfo110);
+		        System.out.println("供应商响应报文："+result110);
+		        InputStream stream110 = new ByteArrayInputStream(result110.getBytes());
+				
+				double ctriptotal = Double.parseDouble(orderNew.getTotalPay());
+				double price = Double.parseDouble(orderNew.getOrderRoomStay().getAmountAfterTax());
+				System.out.println("携程传给我们的价格："+price+"\t总价格："+ctriptotal);
+				double rat = hotelInfoRecord.getDouble("usdrate");
+				double tj = hotelInfoRecord.getDouble("tj");
+				//得到供应商的单价
+				double temp = AmountUtil.subtract(price,  tj, 2);
+				price = AmountUtil.divide(temp, rat, 2);
+				//得到供应商单个Rate范围总价
+				double resteltotal = AmountUtil.multiply(price, days*1.0, 2);
+				total += resteltotal;
+				List<Lin> lin = HttpUtils.Parse110XmlWithLins(stream110,orderNew.getOrderRoomStay().getRoomTypeCode(),orderNew.getOrderRoomStay().getRatePlanCode(), resteltotal+"",price+"");
+				for(Lin li : lin){
+					lins.add(li);	
+				}
 			
-			if(count > adult)
-			{
-				ct = adult+"-0";
-			}
-			else
-			{
-				ct = count+"-0";
-			}
+	        }
 			
-	        String xmlInfo110 = HttpUtils.GetRestelXml110(orderRoomStay.getHotelCode(),hotelInfoRecord.getStr("pais"),hotelInfoRecord.getStr("codprovincia"), start, end, "1", ct ,xml.toString());
-	        System.out.println("供应商请求报文："+xmlInfo110);
-	        String result110 = HttpUtils.HttpClientPost(xmlInfo110);
-	        System.out.println("供应商响应报文："+result110);
-	        InputStream stream110 = new ByteArrayInputStream(result110.getBytes());
-			
-			double total = Double.parseDouble(orderNew.getTotalPay());
-			double price = Double.parseDouble(orderNew.getOrderRoomStay().getAmountAfterTax());
-			System.out.println("携程传给我们的价格："+price+"\t总价格："+total);
-			double rat = hotelInfoRecord.getDouble("usdrate");
-			double tj = hotelInfoRecord.getDouble("tj");
-			//得到供应商的单价
-			double temp = AmountUtil.subtract(price,  tj, 2);
-			price = AmountUtil.divide(temp, rat, 2);
-			//得到供应商的总价
-			total = AmountUtil.multiply(price, days*1.0, 2);
-
 			Date date = new Date();  
 	        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 	        String dateStr = format.format(date);
 			
-			List<Lin> lins = HttpUtils.Parse110XmlWithLins(stream110,orderNew.getOrderRoomStay().getRoomTypeCode(),orderNew.getOrderRoomStay().getRatePlanCode(), total+"",price+"");
 			Record record = Db.findFirst("select id from sys_order where ResID501 = '"+orderNew.getResID501()+"'");
-			
 			if(null != lins && lins.size() > 0)
 			{
 				StringBuffer buffer = new StringBuffer();
