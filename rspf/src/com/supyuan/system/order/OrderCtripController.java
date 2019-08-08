@@ -125,6 +125,7 @@ public class OrderCtripController  extends BaseProjectController {
 				{
 					String count = array[i];
 					new Thread(new Runnable() {
+						@Override
 						public void run() {
 							try {
 								String xmlInfo110 = HttpUtils.GetRestelXml110(check.getHotelCode(),hotelInfoRecord.getStr("pais"),hotelInfoRecord.getStr("codprovincia"), start, end, "1", count,xml.toString());
@@ -535,7 +536,7 @@ public class OrderCtripController  extends BaseProjectController {
 				price = AmountUtil.divide(temp, rat, 2);
 				//得到供应商单个Rate范围总价
 				double resteltotal = AmountUtil.multiply(price, days*1.0, 2);
-				total += resteltotal;
+				total = AmountUtil.add(total, resteltotal, 2);
 				List<Lin> lin = HttpUtils.Parse110XmlWithLins(stream110,orderNew.getOrderRoomStay().getRoomTypeCode(),orderNew.getOrderRoomStay().getRatePlanCode(), resteltotal+"",price+"");
 				for(Lin li : lin){
 					lins.add(li);	
@@ -552,7 +553,7 @@ public class OrderCtripController  extends BaseProjectController {
 			{
 				StringBuffer buffer = new StringBuffer();
 				String titulo = "Sr.";//先生
-				String guestName = ((Customer)customers.get(0)).getGivenName() + " " + ((Customer)customers.get(0)).getSurname();
+				String guestName = customers.get(0).getGivenName() + " " + customers.get(0).getSurname();
 				buffer.append("<paxes>");
 				for(Customer paxs :customers)
 				{
