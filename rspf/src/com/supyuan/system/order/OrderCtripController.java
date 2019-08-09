@@ -442,13 +442,14 @@ public class OrderCtripController  extends BaseProjectController {
 	        double total = 0.0;
 	        List<Lin> lins = new ArrayList<Lin>();
 	        int nulberUtils = 0;
+	        String EffectiveDate = RoomRate.element("Rates").element("Rate").attribute("EffectiveDate").getText();
 	        List<Element> rates = RoomRate.element("Rates").elements("Rate");
 	        for(Element rate : rates){
-	        	String EffectiveDate = rate.attribute("EffectiveDate").getText();
+	        	String EffectiveDatePresent = rate.attribute("EffectiveDate").getText();
 	        	String ExpireDate= rate.attribute("ExpireDate").getText();
 	        	String AmountAfterTax = rate.element("Base").attribute("AmountAfterTax").getText();
 		        orderRoomStay.setNumberOfUnits(NumberOfUnits);
-		        orderRoomStay.setEffectiveDate(EffectiveDate); //start date
+		        orderRoomStay.setEffectiveDate(EffectiveDatePresent); //start date
 		        orderRoomStay.setExpireDate(ExpireDate);	//end date
 		        orderRoomStay.setAmountAfterTax(AmountAfterTax);
 		        orderNew.setOrderRoomStays(orderRoomStay);
@@ -543,6 +544,7 @@ public class OrderCtripController  extends BaseProjectController {
 				}
 			
 	        }
+	        orderRoomStay.setEffectiveDate(EffectiveDate);//设置初始时间
 			
 			Date date = new Date();  
 	        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
