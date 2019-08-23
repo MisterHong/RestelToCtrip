@@ -968,7 +968,7 @@ public class HttpUtils {
 	    						 if( 0< datas && datas < 15 ){
 		    						 Calendar ca = Calendar.getInstance();
 		    				 		 ca.setTime(date_a);
-		    				 		 ca.add(ca.DATE,-2);
+		    				 		 ca.add(ca.DATE,-2-datas);
 	    	    					 date_a = ca.getTime();
 	    	    					 System.out.println("-2"+ca.getTime());
 	    	    					 SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
@@ -1055,7 +1055,7 @@ public class HttpUtils {
 	    						 if( 0< datas && datas < 15 ){
 		    						 Calendar ca = Calendar.getInstance();
 		    				 		 ca.setTime(date_a);
-		    				 		 ca.add(ca.DATE,-2);
+		    				 		 ca.add(ca.DATE,-2-datas);
 	    	    					 date_a = ca.getTime();
 	    	    					 System.out.println("-2"+ca.getTime());
 	    	    					 SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
@@ -1154,7 +1154,7 @@ public class HttpUtils {
 	    						 if( 0< datas && datas < 15 ){
 		    						 Calendar ca = Calendar.getInstance();
 		    				 		 ca.setTime(date_a);
-		    				 		 ca.add(ca.DATE,-2);
+		    				 		 ca.add(ca.DATE,-2-datas);
 	    	    					 date_a = ca.getTime();
 	    	    					 System.out.println("-2"+ca.getTime());
 	    	    					 SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
@@ -1240,7 +1240,7 @@ public class HttpUtils {
 	    						 if( 0< datas && datas < 15 ){
 		    						 Calendar ca = Calendar.getInstance();
 		    				 		 ca.setTime(date_a);
-		    				 		 ca.add(ca.DATE,-2);
+		    				 		 ca.add(ca.DATE,-2-datas);
 	    	    					 date_a = ca.getTime();
 	    	    					 System.out.println("-2"+ca.getTime());
 	    	    					 SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
