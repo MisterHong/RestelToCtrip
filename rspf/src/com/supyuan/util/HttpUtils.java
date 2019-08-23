@@ -962,38 +962,22 @@ public class HttpUtils {
 	    					 String Deadline = "<Deadline OffsetTimeUnit=\"Hour\" OffsetUnitMultiplier=\"24\" OffsetDropTime=\"BeforeArrival\" />";
     				         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");// 自定义时间格式
     				         Date date_a = simpleDateFormat.parse(start);//字符串转Date
-	    					 if(cancelPenalty.contains("less than 1 day(s)"))
+	    					 if(cancelPenalty.contains("less than"))
 	    					 {
-	    						 Calendar ca = Calendar.getInstance();
-	    				 		 ca.setTime(date_a);
-	    				 		 ca.add(ca.DATE,-2);
-    	    					 date_a = ca.getTime();
-    	    					 System.out.println("-2"+ca.getTime());
-    	    					 SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
-    	    					 String time = sdf.format(date_a);
-    	    					 Deadline = "<Deadline AbsoluteDeadline=\""+time+"\" />";
-	    					 }
-	    					 if(cancelPenalty.contains("less than 2 day(s)"))
-	    					 {
-	    						 Calendar ca = Calendar.getInstance();
-	    				 		 ca.setTime(date_a);
-	    				 		 ca.add(ca.DATE,-4);
-    	    					 date_a = ca.getTime();
-    	    					 System.out.println("-4"+ca.getTime());
-    	    					 SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
-    	    					 String time = sdf.format(date_a);
-    	    					 Deadline = "<Deadline AbsoluteDeadline=\""+time+"\" />";
-	    					 }
-	    					 if(cancelPenalty.contains("after 0:00 hours"))
-	    					 {
-	    						 Calendar ca = Calendar.getInstance();
-	    				 		 ca.setTime(date_a);
-	    				 		 ca.add(ca.DATE,-1);
-    	    					 date_a = ca.getTime();
-    	    					 System.out.println("-1"+ca.getTime());
-    	    					 SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
-    	    					 String time = sdf.format(date_a);
-    	    					 Deadline = "<Deadline AbsoluteDeadline=\""+time+"\" />";
+	    						 int datas = Integer.parseInt(cancelPenalty.split(" ")[5]);
+	    						 if( 0< datas && datas < 15 ){
+		    						 Calendar ca = Calendar.getInstance();
+		    				 		 ca.setTime(date_a);
+		    				 		 ca.add(ca.DATE,-2);
+	    	    					 date_a = ca.getTime();
+	    	    					 System.out.println("-2"+ca.getTime());
+	    	    					 SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+	    	    					 String time = sdf.format(date_a);
+	    	    					 
+	    	    					 Deadline = "<Deadline AbsoluteDeadline=\""+time+"\" />";
+	    							 
+	    						 }
+
 	    					 }
 	    					 log.info("推送给携程的取消政策Deadline内容："+Deadline);
 	    					 reg.setDeadline(Deadline);
@@ -1065,38 +1049,22 @@ public class HttpUtils {
 	    					 String Deadline = "<Deadline OffsetTimeUnit=\"Hour\" OffsetUnitMultiplier=\"24\" OffsetDropTime=\"BeforeArrival\" />";
     				         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");// 自定义时间格式
     				         Date date_a = simpleDateFormat.parse(start);//字符串转Date
-	    					 if(cancelPenalty.contains("less than 1 day(s)"))
+	    					 if(cancelPenalty.contains("less than"))
 	    					 {
-	    						 Calendar ca = Calendar.getInstance();
-	    				 		 ca.setTime(date_a);
-	    				 		 ca.add(ca.DATE,-2);
-    	    					 date_a = ca.getTime();
-    	    					 System.out.println("-2"+ca.getTime());
-    	    					 SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
-    	    					 String time = sdf.format(date_a);
-    	    					 Deadline = "<Deadline AbsoluteDeadline=\""+time+"\" />";
-	    					 }
-	    					 if(cancelPenalty.contains("less than 2 day(s)"))
-	    					 {
-	    						 Calendar ca = Calendar.getInstance();
-	    				 		 ca.setTime(date_a);
-	    				 		 ca.add(ca.DATE,-4);
-    	    					 date_a = ca.getTime();
-    	    					 System.out.println("-4"+ca.getTime());
-    	    					 SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
-    	    					 String time = sdf.format(date_a);
-    	    					 Deadline = "<Deadline AbsoluteDeadline=\""+time+"\" />";
-	    					 }
-	    					 if(cancelPenalty.contains("after 0:00 hours"))
-	    					 {
-	    						 Calendar ca = Calendar.getInstance();
-	    				 		 ca.setTime(date_a);
-	    				 		 ca.add(ca.DATE,-1);
-    	    					 date_a = ca.getTime();
-    	    					 System.out.println("-1"+ca.getTime());
-    	    					 SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
-    	    					 String time = sdf.format(date_a);
-    	    					 Deadline = "<Deadline AbsoluteDeadline=\""+time+"\" />";
+	    						 int datas = Integer.parseInt(cancelPenalty.split(" ")[5]);
+	    						 if( 0< datas && datas < 15 ){
+		    						 Calendar ca = Calendar.getInstance();
+		    				 		 ca.setTime(date_a);
+		    				 		 ca.add(ca.DATE,-2);
+	    	    					 date_a = ca.getTime();
+	    	    					 System.out.println("-2"+ca.getTime());
+	    	    					 SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+	    	    					 String time = sdf.format(date_a);
+	    	    					 
+	    	    					 Deadline = "<Deadline AbsoluteDeadline=\""+time+"\" />";
+	    							 
+	    						 }
+
 	    					 }
 	    					 log.info("推送给携程的取消政策Deadline内容："+Deadline);
 	    					 reg.setDeadline(Deadline);
@@ -1180,37 +1148,22 @@ public class HttpUtils {
 	    					 String Deadline = "<Deadline OffsetTimeUnit=\"Hour\" OffsetUnitMultiplier=\"24\" OffsetDropTime=\"BeforeArrival\" />";
     				         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");// 自定义时间格式
     				         Date date_a = simpleDateFormat.parse(start);//字符串转Date
-	    					 if(cancelPenalty.contains("less than 1 day(s)"))
+	    					 if(cancelPenalty.contains("less than"))
 	    					 {
-	    						 Calendar ca = Calendar.getInstance();
-	    				 		 ca.setTime(date_a);
-	    				 		 ca.add(ca.DATE,-2);
-    	    					 date_a = ca.getTime();
-    	    					 System.out.println("-2"+ca.getTime());
-    	    					 SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
-    	    					 String time = sdf.format(date_a);
-    	    					 Deadline = "<Deadline AbsoluteDeadline=\""+time+"\" />";
-	    					 }
-	    					 if(cancelPenalty.contains("less than 2 day(s)"))
-	    					 {
-	    						 Calendar ca = Calendar.getInstance();
-	    				 		 ca.setTime(date_a);
-	    				 		 ca.add(ca.DATE,-4);
-    	    					 date_a = ca.getTime();
-    	    					 System.out.println("-4"+ca.getTime());
-    	    					 SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
-    	    					 String time = sdf.format(date_a);
-    	    					 Deadline = "<Deadline AbsoluteDeadline=\""+time+"\" />";
-	    					 }
-	    					 if(cancelPenalty.contains("after 0:00 hours"))
-	    					 {
-	    						 Calendar ca = Calendar.getInstance();
-	    				 		 ca.setTime(date_a);
-	    				 		 ca.add(ca.DATE,-1);
-    	    					 date_a = ca.getTime();
-    	    					 SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
-    	    					 String time = sdf.format(date_a);
-    	    					 Deadline = "<Deadline AbsoluteDeadline=\""+time+"\" />";
+	    						 int datas = Integer.parseInt(cancelPenalty.split(" ")[5]);
+	    						 if( 0< datas && datas < 15 ){
+		    						 Calendar ca = Calendar.getInstance();
+		    				 		 ca.setTime(date_a);
+		    				 		 ca.add(ca.DATE,-2);
+	    	    					 date_a = ca.getTime();
+	    	    					 System.out.println("-2"+ca.getTime());
+	    	    					 SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+	    	    					 String time = sdf.format(date_a);
+	    	    					 
+	    	    					 Deadline = "<Deadline AbsoluteDeadline=\""+time+"\" />";
+	    							 
+	    						 }
+
 	    					 }
 	    					 log.info("推送给携程的取消政策Deadline内容："+Deadline);
 	    					 reg.setDeadline(Deadline);
@@ -1281,35 +1234,22 @@ public class HttpUtils {
 	    					 String Deadline = "<Deadline OffsetTimeUnit=\"Hour\" OffsetUnitMultiplier=\"24\" OffsetDropTime=\"BeforeArrival\" />";
     				         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");// 自定义时间格式
     				         Date date_a = simpleDateFormat.parse(start);//字符串转Date
-	    					 if(cancelPenalty.contains("less than 1 day(s)"))
+	    					 if(cancelPenalty.contains("less than"))
 	    					 {
-	    						 Calendar ca = Calendar.getInstance();
-	    				 		 ca.setTime(date_a);
-	    				 		 ca.add(ca.DATE,-2);
-    	    					 date_a = ca.getTime();
-    	    					 SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
-    	    					 String time = sdf.format(date_a);
-    	    					 Deadline = "<Deadline AbsoluteDeadline=\""+time+"\" />";
-	    					 }
-	    					 if(cancelPenalty.contains("less than 2 day(s)"))
-	    					 {
-	    						 Calendar ca = Calendar.getInstance();
-	    				 		 ca.setTime(date_a);
-	    				 		 ca.add(ca.DATE,-4);
-    	    					 date_a = ca.getTime();
-    	    					 SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
-    	    					 String time = sdf.format(date_a);
-    	    					 Deadline = "<Deadline AbsoluteDeadline=\""+time+"\" />";
-	    					 }
-	    					 if(cancelPenalty.contains("after 0:00 hours"))
-	    					 {
-	    						 Calendar ca = Calendar.getInstance();
-	    				 		 ca.setTime(date_a);
-	    				 		 ca.add(ca.DATE,-1);
-    	    					 date_a = ca.getTime();
-    	    					 SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
-    	    					 String time = sdf.format(date_a);
-    	    					 Deadline = "<Deadline AbsoluteDeadline=\""+time+"\" />";
+	    						 int datas = Integer.parseInt(cancelPenalty.split(" ")[5]);
+	    						 if( 0< datas && datas < 15 ){
+		    						 Calendar ca = Calendar.getInstance();
+		    				 		 ca.setTime(date_a);
+		    				 		 ca.add(ca.DATE,-2);
+	    	    					 date_a = ca.getTime();
+	    	    					 System.out.println("-2"+ca.getTime());
+	    	    					 SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+	    	    					 String time = sdf.format(date_a);
+	    	    					 
+	    	    					 Deadline = "<Deadline AbsoluteDeadline=\""+time+"\" />";
+	    							 
+	    						 }
+
 	    					 }
 	    					 log.info("推送给携程的取消政策Deadline内容："+Deadline);
 	    					 reg.setDeadline(Deadline);
