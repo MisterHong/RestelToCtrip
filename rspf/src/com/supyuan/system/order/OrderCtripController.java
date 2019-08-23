@@ -528,7 +528,7 @@ public class OrderCtripController  extends BaseProjectController {
 		        InputStream stream110 = new ByteArrayInputStream(result110.getBytes());
 				
 				double ctriptotal = Double.parseDouble(orderNew.getTotalPay());
-				double price = Double.parseDouble(orderNew.getOrderRoomStay().getAmountAfterTax());
+				double price = Double.parseDouble(orderNew.getOrderRoomStay().getAmountAfterTax());                                                                                                                         
 				System.out.println("携程传给我们的价格："+price+"\t总价格："+ctriptotal);
 				double rat = hotelInfoRecord.getDouble("usdrate");
 				double tj = hotelInfoRecord.getDouble("tj");
