@@ -54,6 +54,7 @@ public class OrderCtripController  extends BaseProjectController {
 	        {
 	        	System.out.println("认证失败！");
 	        	renderXml("/pages/template/NoRome.xml");
+	        	return;
 	        }
 	        Element AvailRequestSegments = OTA_HotelAvailRQ.element("AvailRequestSegments");
 	        Element AvailRequestSegment = AvailRequestSegments.element("AvailRequestSegment");
@@ -88,6 +89,7 @@ public class OrderCtripController  extends BaseProjectController {
 		}catch(Exception e){
 			log.error("数据流转换异常", e);
 			renderXml("/pages/template/NoRome.xml");
+			return;
 		}
 		
 		Record hotelInfoRecord = Db.findFirst("select * from sys_hotels_info where codigo_hotel = "+check.getHotelCode());
@@ -156,6 +158,7 @@ public class OrderCtripController  extends BaseProjectController {
 				} catch (InterruptedException e) {
 					log.info("countDownLatch.await() 出错了！"+e.getMessage());
 					renderXml("/pages/template/NoRome.xml");
+					return;
 				}
 				setAttr("roomStays", roomStays);
 			}
@@ -238,6 +241,7 @@ public class OrderCtripController  extends BaseProjectController {
 					{
 						System.out.println("Case 2,roomStays == null 错误,返回无房间！");
 						renderXml("/pages/template/NoRome.xml");
+						return;
 					}
 					setAttr("roomStays", roomStays);
 				} 
@@ -245,6 +249,7 @@ public class OrderCtripController  extends BaseProjectController {
 				{
 					log.info("case2 or 3 出错了，默认返回无房！"+e.getMessage());
 					renderXml("/pages/template/NoRome.xml");
+					return;
 				}
 			}
 		}
@@ -281,6 +286,7 @@ public class OrderCtripController  extends BaseProjectController {
 	        {
 	        	System.out.println("case 7-8 认证失败,返回Error！");
 	        	renderXml("/pages/template/OrderNewError.xml");
+	        	return;
 	        }
 	        String UniqueID = OTA_HotelResRQ.element("UniqueID").attribute("ID").getText();
 	        Record orderIsV = Db.findFirst("select id,ResID501,ResID502 from sys_order where ctripUniqueID = "+UniqueID+" and orderState = 2");
@@ -292,6 +298,7 @@ public class OrderCtripController  extends BaseProjectController {
 	        	setAttr("ResID502",  orderIsV.getStr("ResID502"));
 	        	System.out.println("重复性订单！");
 	        	renderXml("/pages/template/OrderNewSuccess.xml");
+	        	return;
 	        }
 	        setAttr("warning", warning);
 	        
@@ -649,6 +656,7 @@ public class OrderCtripController  extends BaseProjectController {
 				 		}
 				 		System.out.println("预定期间,lins == null 错误,返回Error！");
 				 		renderXml("/pages/template/OrderNewError.xml");
+				 		return;
 				 	}
 				}
 				else
@@ -669,6 +677,7 @@ public class OrderCtripController  extends BaseProjectController {
 					}
 					System.out.println("Restel 202,预订失败,返回Error！");
 					renderXml("/pages/template/OrderNewError.xml");
+					return;
 				}
 			}
 			else
@@ -689,6 +698,7 @@ public class OrderCtripController  extends BaseProjectController {
 				}
 				System.out.println("预定期间,lins == null 错误,返回Error！");
 				renderXml("/pages/template/OrderNewError.xml");
+				return;
 			}
 		}
 		catch(Exception e)
@@ -747,6 +757,7 @@ public class OrderCtripController  extends BaseProjectController {
 	        	setAttr("ResID501", ResID501);
 	        	System.out.println("订单未发现！");
 	        	renderXml("/pages/template/OrderCancelError.xml");
+	        	return;
 	        }
 	        
 	        //restel 401接口，取消订单
@@ -765,6 +776,7 @@ public class OrderCtripController  extends BaseProjectController {
 	        	setAttr("ResID501", ResID501);
 	        	setAttr("ResID502", ResID502);
 	        	renderXml("/pages/template/OrderCancelSuccess.xml");
+	        	return;
 		 	}
 		 	else
 		 	{
@@ -773,6 +785,7 @@ public class OrderCtripController  extends BaseProjectController {
 	        	setAttr("ResID501", ResID501);
 	        	System.out.println("供应商取消失败！");
 	        	renderXml("/pages/template/OrderCancelError.xml");
+	        	return;
 		 	}
 		} catch (Exception e) {
 			System.out.println("订单取消,出现异常,返回Error！");
