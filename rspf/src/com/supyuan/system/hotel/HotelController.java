@@ -334,10 +334,10 @@ public class HotelController extends BaseProjectController {
 		try {
 			Record hotelInfoRecord = Db.findById("sys_hotels_info", "codigo_hotel", codigo_hotel);
 			//推送价格信息
-			for (int i = 0; i < 6; i++) 
+			for (int i = 0; i < 10; i++) 
 			{
-				String start = DateUtils.getAddDayNow(DateUtils.MDY,i*15);
-				String end = DateUtils.getAddDayNow(DateUtils.MDY,(i+1)*15);
+				String start = DateUtils.getAddDayNow(DateUtils.MDY,i*9);
+				String end = DateUtils.getAddDayNow(DateUtils.MDY,(i+1)*9);
 				String xmlInfoRR = HttpUtils.GetRestelXml110(codigo_hotel, hotelInfoRecord.getStr("pais"), "", start, end, "1", "2-0","");
 				log.info("推送酒店："+codigo_hotel+"，房价供应商请求报文："+xmlInfoRR);
 				String resultRR = HttpUtils.HttpClientPost(xmlInfoRR);
