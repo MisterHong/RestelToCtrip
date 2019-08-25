@@ -429,10 +429,10 @@ public class HotelJob extends BaseJob {
 										try
 										{
 											String rpcode = rp.getStr("rpcode");
-											for (int i = 0; i < 6; i++) 
+											for (int i = 0; i < 10; i++) 
 											{
-												String start = DateUtils.getAddDayNow(DateUtils.MDY,i*15);
-												String end = DateUtils.getAddDayNow(DateUtils.MDY,(i+1)*15);
+												String start = DateUtils.getAddDayNow(DateUtils.MDY,i*9);
+												String end = DateUtils.getAddDayNow(DateUtils.MDY,(i+1)*9);
 												String xmlInfo110 = HttpUtils.GetRestelXml110(hotelcode, pais, "", start, end, "1", "2-0","");
 						    					String result110 = HttpUtils.HttpClientPost(xmlInfo110);
 												InputStream stream110 = new ByteArrayInputStream(result110.getBytes());
