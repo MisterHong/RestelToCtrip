@@ -230,9 +230,7 @@ public class HotelController extends BaseProjectController {
 	public void pushSaleType()
 	{
 		String codigo_hotel = getPara("codigo_hotel");
-		String rtcode = getPara(""
-				+ ""
-				+ "");
+		String rtcode = getPara("rtcode");
 		String rpcode = getPara("rpcode");
 		String ctrip_api_url = Config.getStr("ctrip_api_url");
 		try {
