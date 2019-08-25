@@ -129,13 +129,33 @@ public class HotelController extends BaseProjectController {
 	public void GetRTRP()
 	{
 		String codigo_hotel = getPara();
+		//System.out.println("hotel"+codigo_hotel);
+		String get_date = getPara("date","").trim();
+		//System.out.println("选择的时间date"+get_date);
+		String codigo = getPara("codigo_hotel","");
+		if(codigo!=null && !"".equals(codigo)){
+			codigo_hotel = codigo;
+		}
+		//System.out.println("hotel"+codigo_hotel);
+		
+		String datenow = DateUtils.getNowByGMT8().split("T")[0];
+		//System.out.println("今天时间"+datenow);
+		int days = 20;
+		if(get_date!=null && !"".equals(get_date)){
+			 days = DateUtils.between_days(datenow, get_date).intValue();//多少天
+			//System.out.println(days);
+		}
+
+		
 		Record hotelInfoRecord = Db.findById("sys_hotels_info", "codigo_hotel", codigo_hotel);
 		//先删除临时数据
 		Db.update("delete from sys_hotels_temp_roomtype where hotelcode='"+codigo_hotel+"'");
 		try {
+			
 	    	//开始和结束日期都向后
-	        String start = DateUtils.getAddDayNow("MM/dd/yyyy", 15);
-	        String end = DateUtils.getAddDayNow("MM/dd/yyyy", 16);
+			
+	        String start = DateUtils.getAddDayNow("MM/dd/yyyy", days);
+	        String end = DateUtils.getAddDayNow("MM/dd/yyyy", days+1);
             String xmlInfo110 = HttpUtils.GetRestelXml110(hotelInfoRecord.getStr("codigo_hotel"), hotelInfoRecord.getStr("pais"), "", start, end, "1", "2-0", "");
             log.info("获取酒店："+codigo_hotel+"房型请求报文："+xmlInfo110);
             String result110 = HttpUtils.HttpClientPost(xmlInfo110);
@@ -151,6 +171,7 @@ public class HotelController extends BaseProjectController {
 		Page<SysMenu> page = SysMenu.dao.paginate(getPaginator(), "select *",
 				sql.toString().toString());
 		setAttr("page", page);
+		setAttr("codigohotel",codigo_hotel);
 		render(path + "rplist.html");
 	}
 	
@@ -209,7 +230,9 @@ public class HotelController extends BaseProjectController {
 	public void pushSaleType()
 	{
 		String codigo_hotel = getPara("codigo_hotel");
-		String rtcode = getPara("rtcode");
+		String rtcode = getPara(""
+				+ ""
+				+ "");
 		String rpcode = getPara("rpcode");
 		String ctrip_api_url = Config.getStr("ctrip_api_url");
 		try {
@@ -526,6 +549,9 @@ public class HotelController extends BaseProjectController {
 	          xmlinfo2.append("    \t<RequestorID ID=\"hangye\" MessagePassword=\"hangye_101019\" Type=\"1\">");
 	          xmlinfo2.append("    \t\t<CompanyName Code=\"C\" CodeContext=\"978\" />");
 	          xmlinfo2.append("    \t</RequestorID>");
+	          
+	          
+	          
 	          xmlinfo2.append("    </Source>");
 	          xmlinfo2.append("  </POS>");
 	          xmlinfo2.append("  <RatePlans HotelCode=\"" + codigo_hotel + "\">");
@@ -605,6 +631,9 @@ public class HotelController extends BaseProjectController {
 	          xmlinfo.append("            \t<AddressLine>" + hotelInfoRecord.getStr("direccion") + "</AddressLine>");
 	          xmlinfo.append("            </Address>");
 	          xmlinfo.append("          </Addresses>");
+	          
+	          
+	          
 	          xmlinfo.append("          <Phones>");
 	          xmlinfo.append("            <Phone PhoneNumber=\"" + hotelInfoRecord.getStr("telefono") + "\" PhoneTechType=\"Voice\"/>");
 	          xmlinfo.append("          </Phones>");
@@ -621,7 +650,9 @@ public class HotelController extends BaseProjectController {
 	          if (result.contains("Success"))
 	          {
 	            log.info("废弃酒店" + codigo_hotel + "Success");
+	            
 	            Db.update("update sys_hotels_hfq set status = 1  where hid = '" + codigo_hotel + "'");
+	            
 	          }
 	        }
 	      }
